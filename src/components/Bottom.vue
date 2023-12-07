@@ -3,10 +3,14 @@
     <div id="flex-frame">
       <div class="padding"></div>
       <div class="part" id="part1">
-        <h4>各平台二维码</h4>
-        <div v-for="item in zaynAccountLink" class="link-item">
-          <img :src="getImage(item.img)" alt="img"/>
-          <p>{{ item.name }}</p>
+        <h4>各平台账号二维码</h4>
+        <div v-for="(item, index) in zaynAccountLink" class="link-item"
+             @mouseenter="splitImg(index)" @mouseleave="gatherImg(index)">
+          <a :href="item.link">
+            <img class="link-item-icon" :src="getImage(item.img)" alt="img" :ref="'linkItemIcon' + index"/>
+            <img class="link-item-qr" :src="getImage(item.qr)" alt="qr" :ref="'linkItemQR' + index"/>
+            <p>{{ item.name }}</p>
+          </a>
         </div>
       </div>
       <div id="division-line"></div>
@@ -45,26 +49,27 @@ export default {
         }, {
           name: '微信',
           img: '微信.png',
-          qr: '微信QR.png'
+          qr: '微信QR.png',
+          link: '###'
         }, {
           name: '豆瓣',
           img: '豆瓣.png',
-          qr: '豆瓣QR.png',
+          qr: '豆瓣QR.jpg',
           link: 'https://www.douban.com/people/184841006/?_i=1940996c_eXzlz'
         }, {
           name: '知乎',
           img: '知乎.png',
-          qr: '知乎QR.png',
+          qr: '知乎QR.jpg',
           link: 'https://www.zhihu.com/org/da-yu-xin-li-zi-xun-gong-zuo-shi-93'
         }, {
           name: '抖音',
           img: '抖音.png',
-          qr: '抖音QR.png',
+          qr: '抖音QR.jpg',
           link: 'https://www.douyin.com/user/MS4wLjABAAAA48I7Ro0n9MXhQY4mZZKe9gzO-0YOGyMtxMDfL_NGWaM'
         }, {
           name: '微博',
           img: '微博.png',
-          qr: '微博QR.png',
+          qr: '微博QR.jpg',
           link: 'https://www.weibo.com/p/1006066462390220/home'
         }
       ]
@@ -73,6 +78,20 @@ export default {
   methods: {
     getImage(name) {
       return getAssetsFile(name)
+    },
+    splitImg(index) {
+      let icon = this.$refs['linkItemIcon' + index][0]
+      icon.style.transform = 'translateX(0)'
+      let qr = this.$refs['linkItemQR' + index][0]
+      qr.style.transform = 'translateX(0)'
+      qr.style.opacity = '100'
+    },
+    gatherImg(index) {
+      let frame = this.$refs['linkItemIcon' + index][0]
+      frame.style.transform = 'translateX(50%)'
+      let qr = this.$refs['linkItemQR' + index][0]
+      qr.style.transform = 'translateX(-50%)'
+      qr.style.opacity = '0'
     }
   }
 }
@@ -115,14 +134,35 @@ export default {
   /*align-items: start;*/
 }
 
+#part1 h4 {
+  margin-left: 30px;
+}
+
 #part1 .link-item {
   display: inline-block;
   margin: 0 30px 0 0;
 }
 
+#part1 .link-item a {
+  color: black;
+  text-decoration: none;
+}
+
 #part1 .link-item img {
   object-fit: cover;
   width: 70px;
+  transition: all 0.3s ease-in-out;
+}
+
+#part1 .link-item .link-item-icon {
+  transform: translateX(50%);
+  position: relative;
+  z-index: 1;
+}
+
+#part1 .link-item .link-item-qr {
+  opacity: 0;
+  transform: translateX(-50%);
 }
 
 #part1 .link-item p {
@@ -139,7 +179,7 @@ export default {
 }
 
 #division-line {
-  background-image: linear-gradient(to bottom, rgb(225, 94, 145) 20%, rgb(115, 204, 255) 80%); /*背景色为浅灰色*/
+  background-image: linear-gradient(to bottom, rgb(225, 94, 145) 20%, rgb(115, 204, 255) 80%);
   width: 4px; /*设置宽高*/
   height: 300px;
 }
@@ -150,7 +190,7 @@ export default {
   /*padding-bottom: 10px;*/
 }
 
-#beian a{
+#beian a {
   color: black;
 }
 

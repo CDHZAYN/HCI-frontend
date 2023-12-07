@@ -12,16 +12,16 @@ export default [
         component: Home,
         show: true
     }, {
-        name: '团队',
-        path: '/home',
-        component: Home,
-        show: true
-    }, {
         name: '文编',
         path: '/home',
         component: Home,
         show: true
     }, {
+        name: '团队',
+        path: '/home',
+        component: Home,
+        show: true
+    },  {
         name: '预约',
         path: '/home',
         component: Home,
