@@ -19,6 +19,7 @@
             <p :class="{'book-event': item.type === '活动预约'}">{{ item.type }}&nbsp;</p>
             <p> | {{ item.date }}</p>
             <h4>{{ item.title }}</h4>
+            <h5>{{item.subtitle}}</h5>
           </div>
         </a>
       </div>
@@ -48,25 +49,25 @@ export default {
       article: [{
         pic: '文章默认头图.png',
         title: '“人生的意义到底是什么？”来自11位心理咨询师的回答',
-        subtitle: '',
+        subtitle: '最近一直在追《都挺好》，整部剧不同于以往的家庭伦理剧，它终于将那张遮盖在中国家庭表面的都挺好、和睦的「面子」撕开，让我们看到了它真实的、剑拔弩张的「里子」。',
         type: '活动预约',
         date: '2023-11-13'
       }, {
         pic: '文章默认头图.png',
         title: '《奇葩说》黄执中：我一辈子都讨厌小孩 | 那些被孤立过的人',
-        subtitle: '',
+        subtitle: '最近一直在追《都挺好》，整部剧不同于以往的家庭伦理剧，它终于将那张遮盖在中国家庭表面的都挺好、和睦的「面子」撕开，让我们看到了它真实的、剑拔弩张的「里子」。',
         type: '活动预约',
         date: '2023-11-13'
       }, {
         pic: '文章默认头图.png',
         title: '这样的爱令人窒息，却难以逃离',
-        subtitle: '',
+        subtitle: '最近一直在追《都挺好》，整部剧不同于以往的家庭伦理剧，它终于将那张遮盖在中国家庭表面的都挺好、和睦的「面子」撕开，让我们看到了它真实的、剑拔弩张的「里子」。',
         type: '活动回顾',
         date: '2023-11-13'
       }, {
         pic: '文章默认头图.png',
         title: '焦虑的本质是什么？',
-        subtitle: '',
+        subtitle: '最近一直在追《都挺好》，整部剧不同于以往的家庭伦理剧，它终于将那张遮盖在中国家庭表面的都挺好、和睦的「面子」撕开，让我们看到了它真实的、剑拔弩张的「里子」。',
         type: '活动回顾',
         date: '2023-11-13'
       }],
@@ -140,6 +141,7 @@ export default {
 }
 
 #event-article-frame .event-article-item .event-article-item-text {
+  width: calc(100% - 220px);
   margin-left: 10px;
 }
 
@@ -156,6 +158,19 @@ export default {
 #event-article-frame .event-article-item h4 {
   font-size: 20px;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#event-article-frame .event-article-item h5 {
+  font-size: 13px;
+  font-weight: normal;
+  margin: 5px 0 0 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 
 #event-article-frame > a {
