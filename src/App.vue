@@ -1,5 +1,5 @@
 <template>
-  <div style="min-height: calc(100vh - 82px);">
+  <div style="min-height: calc(100vh - 400px);">
     <nav-bar :routes="routes" v-show="isHeadTailNeeded"/>
     <router-view/>
   </div>

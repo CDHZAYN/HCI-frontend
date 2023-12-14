@@ -25,7 +25,7 @@
         <a href="/article">查看更多活动文章→</a>
       </div>
     </div>
-    <div id="hr-division-line" />
+    <div id="hr-division-line"/>
     <div id="poison-article-frame">
       <div v-for="(item, index) in article" class="poison-article-item"
            @mouseenter="isHoverPoison[index] = true" @mouseleave="isHoverPoison[index] = false">
@@ -75,8 +75,7 @@ export default {
         subtitle: '',
         type: '活动回顾',
         date: '2023-11-13'
-      }
-      ],
+      }],
       isHoverEvent: [],
       isHoverPoison: []
     }
@@ -193,7 +192,7 @@ export default {
   text-decoration: underline;
 }
 
-#hr-division-line{
+#hr-division-line {
   margin: 10px 0;
   height: 1px;
   background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);;

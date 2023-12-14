@@ -3,7 +3,7 @@
     <div id="flex-frame">
       <div class="padding"></div>
       <div class="part" id="part1">
-        <h4>各平台账号二维码</h4>
+        <h4>各平台账号</h4>
         <div v-for="(item, index) in zaynAccountLink" class="link-item"
              @mouseenter="splitImg(index)" @mouseleave="gatherImg(index)">
           <a :href="item.link">
@@ -106,6 +106,7 @@ export default {
   box-shadow: 0 1px 3px 3px rgb(0, 0, 0, .1);
   position: relative;
   bottom: 0;
+  height: 400px;
 }
 
 #flex-frame {
@@ -140,7 +141,7 @@ export default {
 
 #part1 .link-item {
   display: inline-block;
-  margin: 0 30px 0 0;
+  /*margin: 0 10px 0 0;*/
 }
 
 #part1 .link-item a {

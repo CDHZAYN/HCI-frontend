@@ -23,6 +23,11 @@ import getAssetsFile from "../../../assets/getAssetsFile.js";
 
 export default {
   name: "Banner",
+  data(){
+    return{
+
+    }
+  },
   methods: {
     getImg(name) {
       return getAssetsFile(name)
