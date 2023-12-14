@@ -177,6 +177,7 @@ export default {
 
 #bottom-frame :deep(.el-loading-mask){
   transform: scale(70%, 70%);
+  z-index: 0;
 }
 
 </style>
