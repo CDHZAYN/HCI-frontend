@@ -37,13 +37,18 @@
     </div>
   </div>
   <div id="counselor-frame">
-    <div v-for="(item, index) in counselorList" :class="{'counselor-item': true, 'counselor-item-border-show': isShow[index]}"
-      :style="{'transform': `translate(-${(timeCnt) % (320 * counselorList.length / 2 - 50)}px, 5px)`}">
+    <div v-for="(item, index) in counselorList"
+         :class="{'counselor-item': true, 'counselor-item-border-show': isShow[index]}"
+         :style="{'transform': `translate(-${(timeCnt) % (320 * counselorList.length / 2 - 50)}px, 5px)`}">
       <div :class="{ 'item-hover-not-show': !isShow[index], 'counselor-item-title': true}">
         <h1>{{ item.name }}</h1>
         <h2>{{ item.rank }}</h2>
       </div>
-      <img :src="getImg(item.img)" @mouseenter="mouseEnterItem(index)" @mouseleave="mouseLeaveItem(index)"/>
+      <a href="/counselor/0">
+        <div class="img-frame">
+          <img :src="getImg(item.img)" @mouseenter="mouseEnterItem(index)" @mouseleave="mouseLeaveItem(index)"/>
+        </div>
+      </a>
       <div :class="{'item-hover-not-show': !isShow[index], 'counselor-item-field':true}">
         <p v-for="fieldItem in item.field">{{ fieldItem }}</p>
       </div>
@@ -119,17 +124,17 @@ export default {
     getImg(name) {
       return getAssetsFile(name)
     },
-    mouseEnterItem(index){
+    mouseEnterItem(index) {
       this.isShow[index] = true
       clearInterval(this.timer)
     },
-    mouseLeaveItem(index){
+    mouseLeaveItem(index) {
       this.isShow[index] = false
-      this.timer = setInterval(()=>++this.timeCnt, 50)
+      this.timer = setInterval(() => ++this.timeCnt, 50)
     }
   },
   mounted() {
-    this.timer = setInterval(()=>++this.timeCnt, 50)
+    this.timer = setInterval(() => ++this.timeCnt, 50)
   }
 }
 </script>
@@ -241,7 +246,13 @@ export default {
   font-weight: normal;
 }
 
-.counselor-item img {
+.counselor-item .img-frame {
+  width: 300px;
+  height: 300px;
+}
+
+.counselor-item .img-frame img {
+  width: 300px;
   height: 300px;
   object-fit: cover;
 }

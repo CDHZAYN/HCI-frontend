@@ -20,22 +20,25 @@
     </div>
   </div>
   <Transition appear>
-    <div class="counselor-hover" v-show="hoverDisplay" :style="{'transform': `translate(${hoverX}px, ${hoverY - 100}px)`}">
+    <div class="counselor-hover" v-show="hoverDisplay"
+         :style="{'transform': `translate(${hoverX}px, ${hoverY - 100}px)`}">
       <div id="counselor-hover-title">
         <h1>{{ showingCounselor.name }}</h1>
         <h2>{{ showingCounselor.rank }}</h2>
       </div>
-      <div style="width: 300px; height: 300px;">
-        <img :src="getImg(showingCounselor.img)"/>
-      </div>
+      <a href="/counselor/0">
+        <div style="width: 300px; height: 300px;">
+          <img :src="getImg(showingCounselor.img)"/>
+        </div>
+      </a>
       <div id="counselor-hover-field">
         <p v-for="item in showingCounselor.field">{{ item }}</p>
       </div>
     </div>
   </Transition>
   <div v-for="(item, index1) in Math.ceil(counselorList.length / 4)" class="counselor-row-frame">
-    <div class="counselor-shadow-frame">
-      <div class="counselor-shadow">
+    <div class="banner-frame">
+      <div class="shadow">
       </div>
     </div>
     <div class="counselor-entry-frame">
@@ -142,7 +145,7 @@ export default {
     mouseEnterItem(index1, index2) {
       this.hoverDisplay = false
       const index = index1 * 4 + index2
-      setTimeout(()=>{
+      setTimeout(() => {
         this.showingCounselor = this.counselorList[index1 * 4 + index2]
         this.hoverX = this.$refs['counselor' + index][0].getBoundingClientRect().left
         // 这里不必要减最左元素的边距，减了反而会出错（可能是因为flex内获取的left不准确）
@@ -173,7 +176,7 @@ export default {
 
 <style scoped>
 
-.v-enter-active{
+.v-enter-active {
   transition: opacity 0.2s ease-in-out;
 }
 
@@ -273,7 +276,7 @@ export default {
   padding-bottom: 60px;
 }
 
-.counselor-shadow-frame {
+.banner-frame {
   width: 100%;
   height: 300px;
   /*margin: 20px 0 40px 0;*/
@@ -281,7 +284,7 @@ export default {
   overflow: hidden;
 }
 
-.counselor-shadow {
+.shadow {
   height: 300px;
   width: 106vw;
   transform: translate(-3vw);

@@ -13,7 +13,7 @@
     <div id="event-article-frame">
       <div v-for="(item, index) in article" class="event-article-item"
            @mouseenter="isHoverEvent[index] = true" @mouseleave="isHoverEvent[index] = false">
-        <a :href="'###'">
+        <a :href="'/article/0'">
           <img :src="getImg(item.pic)" :class="{'is-hover': isHoverEvent[index]}"/>
           <div class="event-article-item-text">
             <p :class="{'book-event': item.type === '活动预约'}">{{ item.type }}&nbsp;</p>

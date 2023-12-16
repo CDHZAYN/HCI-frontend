@@ -1,13 +1,15 @@
 <template>
-
 </template>
 
 <script>
 export default {
-  name: "Book"
+  name: "Book",
+  data() {
+    return {
+    }
+  }
 }
 </script>
 
 <style scoped>
-
 </style>

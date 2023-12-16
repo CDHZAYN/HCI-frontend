@@ -10,7 +10,7 @@
     </div>
     <img src="/logo.png" id="icon" alt="icon">
     <div id="user">
-      <a v-if="hasLogin">啥ZAYN</a>
+      <a v-if="hasLogin" @click="$emit('openSetting')" style="cursor: pointer">啥ZAYN</a>
       <a href="/login" v-else>登录/注册</a>
     </div>
   </div>
@@ -18,6 +18,7 @@
 
 <script>
 import {nextTick} from "vue";
+import routes from "../network/routes.js";
 
 export default {
   name: "NavBar",
@@ -27,7 +28,7 @@ export default {
   },
   data() {
     return {
-      hasLogin: false,
+      hasLogin: true,
       pageSelecting: 1,
       pageSelectBlockOffset: 0,
       pageSelectBlockWidth: 0,
@@ -40,19 +41,42 @@ export default {
         for (let i = 0; i < this.pageSelecting; ++i) {
           const width = this.$refs['page' + i][0].clientWidth
           console.log(width)
-          if(width !== 0)
+          if (width !== 0)
             this.pageSelectBlockOffset += width + 40
         }
         this.pageSelectBlockWidth = this.$refs['page' + newVal][0].clientWidth + 20
+      }
+    },
+    $route(newVal) {
+      if (newVal.name === '文章') {
+        this.pageSelecting = 2
+      } else if (newVal.name === '团队成员') {
+        this.pageSelecting = 4
       }
     }
   },
   methods: {},
   mounted() {
     // for(let i = 0; i < this.routes.length; ++i)
-    console.log(this.$refs['page' + 1][0].clientWidth)
     this.pageSelectBlockOffset = 30
     this.pageSelectBlockWidth = this.$refs['page' + 1][0].clientWidth + 20
+
+    setTimeout(() => {
+      for (let i = 0; i < this.routes.length; ++i) {
+        if (this.routes[i].name === this.$route.name) {
+          let name = this.$route.name
+          if (name === '文章') {
+            this.pageSelecting = 2
+          } else if (name === '团队成员') {
+            this.pageSelecting = 4
+          } else {
+            this.pageSelecting = i
+          }
+          return
+        }
+      }
+    }, 1)
+
   }
 }
 </script>
@@ -77,14 +101,14 @@ export default {
   transition: all 0.2s ease-in-out;
 }
 
-.router-link{
+.router-link {
   display: inline-block;
   margin-left: 40px;
   /*font-weight: bold;*/
   /*border-bottom: 5px solid red;*/
 }
 
-a{
+a {
   text-decoration: none;
   color: black;
   font-family: Montserrat, PingFang SC, Microsoft YaHei, Arial, sans-serif;

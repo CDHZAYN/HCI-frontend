@@ -136,7 +136,7 @@ export default {
     },
     confirmPasswordValidator(rule, value, callback) {
       if (value !== this.registerForm.password)
-        return callback(new Error('Password not match!'))
+        return callback(new Error('两次输入的密码不匹配'))
       return callback()
     },
     emailValidator(rule, value, callback) {

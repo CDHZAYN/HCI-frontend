@@ -6,6 +6,7 @@ import request from "./network/request.js"
 import axios from "axios"
 
 import ElementPlus from 'element-plus'
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import 'element-plus/dist/index.css'
 
 const router = createRouter({
@@ -24,7 +25,9 @@ const app = createApp(App)
 app.config.globalProperties.$request = request
 app.config.globalProperties.$rawRequest = axios
 
-app.use(ElementPlus)
+app.use(ElementPlus, {
+    locale: zhCn,
+})
 app.use(router)
 
 app.mount('#app')
