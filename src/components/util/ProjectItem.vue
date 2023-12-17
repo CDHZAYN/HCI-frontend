@@ -1,29 +1,28 @@
 <template>
-  <div id="main-frame">
-    <div v-for="item in projectList" class="project-item">
-      <ProjectItem :title="item.title" :description="item.description" :img="item.img"></ProjectItem>
-    </div>
-    <div style="height: 330px"></div>
-    <div id="weixin">
+  <div id="frame" @mouseenter="isHover = true" @mouseleave="isHover = false">
+    <img :src="getImg(img)"/>
+    <h1>{{title}}</h1>
+    <div id="gradient-bg" :class="{'is-hover': isHover}">
       <div>
-        <h3>服务详情咨询</h3>
-        <p>搜索预约助理微信号：<br>zaynxinliyuyuezixun</p>
-        <p>或扫描左侧二维码→</p>
+        <p>{{description}}</p>
       </div>
-      <img :src="getImg('预约咨询QR.png')">
     </div>
   </div>
 </template>
 
 <script>
-import ProjectItem from "../../util/ProjectItem.vue";
-import getAssetsFile from "../../../assets/getAssetsFile.js";
+import getAssetsFile from "../../assets/getAssetsFile.js";
 
 export default {
-  name: "Project",
-  components: {ProjectItem},
-  data() {
-    return {
+  name: "ProjectItem",
+  props:{
+    title: String,
+    img: String,
+    description: String
+  },
+  data(){
+    return{
+      isHover: false,
       projectList: [
         {
           title: '单人咨询',
@@ -49,7 +48,7 @@ export default {
       ]
     }
   },
-  methods: {
+  methods:{
     getImg(name){
       return getAssetsFile(name)
     }
@@ -58,33 +57,49 @@ export default {
 </script>
 
 <style scoped>
-#main-frame {
-  margin-top: 30px;
-  padding: 0 200px;
-  width: calc(100% - 400px);
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
+  #frame{
+    width: 480px;
+    height: 180px;
+    overflow: hidden;
+    margin: 10px;
+  }
 
-.project-item {
-  display: inline-block;
-}
+  #frame img{
+    position: absolute;
+    z-index: -2;
+    width: 480px;
+    height: 180px;
+    object-fit: cover;
+  }
 
-#weixin {
-  width: 480px;
-  height: 180px;
-  margin: 10px;
-  background-color: white;
-  box-shadow: -2px 2px 3px rgb(225, 94, 145), 2px -2px 3px rgb(115, 204, 255);
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-}
+  #frame #gradient-bg{
+    position: relative;
+    z-index: -1;
+    width: 480px;
+    height: 181px;
+    opacity: .8;
+    background-image: linear-gradient(to bottom, rgb(225, 94, 145) 20%, rgb(115, 204, 255) 80%);
+    transform: translateY(180px);
+    transition: transform 0.5s ease-in-out;
+  }
 
-#weixin>img{
-  width: 160px;
-  height: 160px;
-}
+  #frame #gradient-bg.is-hover{
+    transform: translateY(-51px);
+  }
 
+  #frame h1{
+    height: 50px;
+    font-size: 26px;
+    padding: 20px 0 0 20px;
+    box-sizing: border-box;
+    color: white;
+    text-shadow: 2px 2px 10px black;
+    margin: 0;
+    /*margin-bottom: 20px;*/
+  }
+
+  #frame p{
+    margin: 0;
+    padding: 70px 20px;
+  }
 </style>

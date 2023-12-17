@@ -2,7 +2,7 @@
   <div id="main-frame">
     <div id="search-frame">
       <div id="head-search-frame">
-        <el-input v-model="searchName" placeholder="搜索文章标题" maxlength="10">
+        <el-input v-model="searchName" placeholder="搜索咨询师名称" maxlength="10">
           <template #prefix>
             <el-icon>
               <Search></Search>
@@ -73,7 +73,7 @@ export default {
       range: [100, 900],
       field: ['全部领域', '亲密关系', '婚姻恋爱', '双相情感障碍', '青春期', '学业适应', '情绪困扰', '人际关系', '创伤心理', '个人成长', '家庭危机', '中年危机', '多文化群体',
         '焦虑强迫', '压力管理', '人本主义', '精神动力学', '亲子沟通', '游戏治疗'],
-      location: ['全部地点', '静安寺店', '陆家嘴店'],
+      location: ['全部地点', '静安寺店', '陆家嘴店', '线上'],
       sex: ['全部性别', '男咨询师', '女咨询师'],
       rank: ['全部职位', '专业咨询师', '专家级咨询师', '资深级咨询师', '督导级咨询师'],
       counselType: ['全部形式', '个体咨询', '多人咨询', '团体活动', '企业EAP'],
