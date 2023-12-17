@@ -2,23 +2,29 @@
   <div style="height: 30px"></div>
   <BlockSelector :list="bookType" :color="'blue'"></BlockSelector>
   <el-collapse accordion>
-    <el-collapse-item name="1">
+    <el-collapse-item v-for="(item, index) in bookList" :name="index">
       <template #title>
-        <img :src="getImg('counselor1.png')">
-        <h1>陈铿-单人咨询</h1>
+        <img :src="getImg(item.profile)">
+        <h1>{{ item.title }}</h1>
         <div class="info-item">
-          <h3>3天后 20:00 - 21:00</h3>
-          <h3>静安咨询室</h3>
+          <h3>{{ item.time }}</h3>
+          <h3>{{ item.location }}</h3>
         </div>
       </template>
       <div style="height: 10px;"></div>
+      <div id="hr-division-line"></div>
       <div class="detail-item-frame">
         <h2>
           咨询者
         </h2>
-        <p v-for="(item, index) in fellowList" :class="{'deleting-fellow': fellowDeleting.indexOf(index) !== -1}"
-           @click="selectFellow(index)">{{ item }}</p>
-        <div id="fellow-control-frame">
+        <div v-for="(item, index) in fellowList" class="fellow-item-frame"
+             @click="selectFellow(index)">
+          <div :class="{'deleting-background': true,
+          'deleting-fellow': fellowDeleting.indexOf(index) !== -1}"></div>
+          <h3>{{ item }}</h3>
+          <p>这是备注这是备注</p>
+        </div>
+        <div class="fellow-control-frame">
           <el-select multiple filterable remote reserve-keyword :remote-method="searchFellowName" v-model="fellowAdding"
                      @blur="addFellow" placeholder="添加咨询者">
             <el-option
@@ -32,111 +38,22 @@
         </div>
       </div>
       <div style="height: 10px;"></div>
+      <div id="hr-division-line"></div>
       <div class="detail-item-frame">
         <h2>
           额外信息
         </h2>
-        <div v-for="item in inputList">
+        <div v-for="item in inputList" class="input-item-frame">
           <h3>{{ item.inputTitle }}</h3>
           <el-input v-model="item.inputAnswer" maxlength="256" show-word-limit type="textarea"
                     :autosize="{ maxRows: 6 }"/>
         </div>
 
       </div>
-      <div style="height: 30px;"></div>
+      <div id="hr-division-line"></div>
       <el-button type="primary">保存更改</el-button>
       <el-button type="danger">取消预约</el-button>
     </el-collapse-item>
-    <el-collapse-item name="2">
-      <template #title>
-        <img :src="getImg('counselor1.png')">
-        <h1  style="color: grey">陈铿-单人咨询</h1>
-        <div class="info-item">
-          <h3 style="color: grey">已取消</h3>
-<!--          <h3>静安咨询室</h3>-->
-        </div>
-      </template>
-      <div style="height: 10px;"></div>
-      <div class="detail-item-frame">
-        <h2>
-          咨询者
-        </h2>
-        <p v-for="(item, index) in fellowList" :class="{'deleting-fellow': fellowDeleting.indexOf(index) !== -1}"
-           @click="selectFellow(index)">{{ item }}</p>
-        <div id="fellow-control-frame">
-          <el-select multiple filterable remote reserve-keyword :remote-method="searchFellowName" v-model="fellowAdding"
-                     @blur="addFellow" placeholder="添加咨询者">
-            <el-option
-                v-for="item in candidateFellow"
-                :key="item"
-                :label="item"
-                :value="item"
-            />
-          </el-select>
-          <el-button type="danger" :disabled="fellowDeleting.length === 0">删除选中咨询者</el-button>
-        </div>
-      </div>
-      <div style="height: 10px;"></div>
-      <div class="detail-item-frame">
-        <h2>
-          额外信息
-        </h2>
-        <div v-for="item in inputList">
-          <h3>{{ item.inputTitle }}</h3>
-          <el-input v-model="item.inputAnswer" maxlength="256" show-word-limit type="textarea"
-                    :autosize="{ maxRows: 6 }"/>
-        </div>
-
-      </div>
-      <div style="height: 30px;"></div>
-      <el-button type="primary">保存更改</el-button>
-      <el-button type="danger">取消预约</el-button>
-    </el-collapse-item>
-    <el-collapse-item name="3">
-    <template #title>
-      <img :src="getImg('counselor1.png')">
-      <h1>陈铿-单人咨询</h1>
-      <div class="info-item">
-        <h3>5天前 20:00 - 21:00</h3>
-        <h3>静安咨询室</h3>
-      </div>
-    </template>
-    <div style="height: 10px;"></div>
-    <div class="detail-item-frame">
-      <h2>
-        咨询者
-      </h2>
-      <p v-for="(item, index) in fellowList" :class="{'deleting-fellow': fellowDeleting.indexOf(index) !== -1}"
-         @click="selectFellow(index)">{{ item }}</p>
-      <div id="fellow-control-frame">
-        <el-select multiple filterable remote reserve-keyword :remote-method="searchFellowName" v-model="fellowAdding"
-                   @blur="addFellow" placeholder="添加咨询者">
-          <el-option
-              v-for="item in candidateFellow"
-              :key="item"
-              :label="item"
-              :value="item"
-          />
-        </el-select>
-        <el-button type="danger" :disabled="fellowDeleting.length === 0">删除选中咨询者</el-button>
-      </div>
-    </div>
-    <div style="height: 10px;"></div>
-    <div class="detail-item-frame">
-      <h2>
-        额外信息
-      </h2>
-      <div v-for="item in inputList">
-        <h3>{{ item.inputTitle }}</h3>
-        <el-input v-model="item.inputAnswer" maxlength="256" show-word-limit type="textarea"
-                  :autosize="{ maxRows: 6 }"/>
-      </div>
-
-    </div>
-    <div style="height: 30px;"></div>
-    <el-button type="primary">保存更改</el-button>
-    <el-button type="danger">取消预约</el-button>
-  </el-collapse-item>
   </el-collapse>
   <div style="height: 30px"></div>
 </template>
@@ -152,11 +69,35 @@ export default {
     return {
       bookType: ['全部预约', '待进行', '已完成', '已取消'],
       fellowList: ['黄宝俊', '大B', '小B', '超级无敌大B黄B俊'],
+      bookList: [{
+        title: '陈铿-单人咨询',
+        time: '5天前 20:00 - 21:00',
+        location: '静安咨询室',
+        profile: 'counselor1.png'
+      }, {
+        title: '杨坚-多人咨询',
+        time: '5天前 20:00 - 21:00',
+        location: '静安咨询室',
+        profile: 'counselor2.png'
+      }, {
+        title: '张园园-单人咨询',
+        time: '已取消',
+        location: '静安咨询室',
+        profile: 'counselor3.png'
+      }, {
+        title: '陈铿-单人咨询',
+        time: '5天前 20:00 - 21:00',
+        location: '静安咨询室',
+        profile: 'counselor1.png'
+      }],
       candidateFellow: [],
       fellowDeleting: [],
       fellowAdding: [],
       inputList: [{
-        inputTitle: '额外信息1',
+        inputTitle: '请描述一下您近期的精神状况',
+        inputAnswer: ''
+      }, {
+        inputTitle: '您是精神有问题吗？',
         inputAnswer: '我是大傻逼我是大傻逼我是大傻逼我是大傻逼'
       }]
     }
@@ -221,25 +162,62 @@ export default {
   margin: 0;
 }
 
+#hr-division-line {
+  margin: 20px 0;
+  height: 1px;
+  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);
+}
+
 :deep(.el-collapse-item__content .detail-item-frame) {
-  border-left: 4px solid rgba(0, 0, 0, 0.2);
-  padding-left: 10px;
+  /*border-left: 4px solid rgba(0, 0, 0, 0.2);*/
+  /*padding-left: 10px;*/
 }
 
 :deep(.el-collapse-item__content h2) {
   margin-bottom: 0;
 }
 
-
-:deep(.el-collapse-item__content p) {
-  display: inline-block;
-  padding: 5px 8px;
-  margin: 5px;
-  /*border: 1px solid lightslategrey;*/
-  border-radius: 5px;
-  font-size: 14px;
+:deep(.fellow-item-frame) {
+  display: inline-flex;
+  width: calc(50% - 2px);
+  height: 80px;
+  padding: 10px;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid #ebeef5;
   cursor: pointer;
-  transition: background-color 0.2s linear, color 0.2s linear;
+  position: relative;
+}
+
+:deep(.fellow-item-frame .deleting-background) {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 100%;
+  background-image: linear-gradient(45deg, rgb(115, 204, 255) 0, transparent 30%);
+  transition: opacity 0.2s linear;
+  opacity: 0;
+}
+
+:deep(.fellow-item-frame .deleting-background.deleting-fellow) {
+  opacity: 1;
+}
+
+:deep(.fellow-item-frame h3) {
+  position: relative;
+  z-index: 3;
+  margin: 0;
+  /*font-size: 14px;*/
+}
+
+:deep(.fellow-item-frame p) {
+  position: relative;
+  z-index: 3;
+  margin: 0;
+  /*font-size: 14px;*/
 }
 
 :deep(.el-collapse-item__content p.deleting-fellow) {
@@ -247,12 +225,23 @@ export default {
   color: white;
 }
 
-:deep(.el-collapse-item__content #fellow-control-frame) {
-  /*margin-top: 20px;*/
+:deep(.el-collapse-item__content .fellow-control-frame) {
+  margin-top: 20px;
 }
 
-:deep(#fellow-control-frame .el-button) {
+:deep(.fellow-control-frame .el-button) {
   margin-left: 20px;
+}
+
+:deep(.input-item-frame){
+  width: calc(100% - 2px);
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ebeef5;
+}
+
+:deep(.input-item-frame h3){
+  margin: 0 0 5px 0;
 }
 
 :deep(.el-textarea__inner) {

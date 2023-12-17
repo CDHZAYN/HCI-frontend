@@ -33,6 +33,9 @@
       <div v-else-if="active === 2">
         <BookInfo  @next-to="nextTo"></BookInfo>
       </div>
+      <div v-else-if="active === 3">
+        <BookSuccess @next-to="nextTo"></BookSuccess>
+      </div>
     </Transition>
   </div>
 </template>
@@ -43,10 +46,11 @@ import {More, Search, ChatLineSquare} from "@element-plus/icons-vue";
 import BookInfo from "./components/BookInfo.vue";
 import BookType from "./components/BookType.vue";
 import BookCounselor from "./components/BookCounselor.vue";
+import BookSuccess from "./components/BookSuccess.vue";
 
 export default {
   name: "Book",
-  components: {BookCounselor, BookType, BookInfo, More, Search, ChatLineSquare},
+  components: {BookSuccess, BookCounselor, BookType, BookInfo, More, Search, ChatLineSquare},
   data() {
     return {
       active: 0,
@@ -59,6 +63,8 @@ export default {
   },
   methods: {
     backTo(step) {
+      if(this.active === 3 && step !== 0)
+        return
       if (this.active > step)
         this.active = step
     },

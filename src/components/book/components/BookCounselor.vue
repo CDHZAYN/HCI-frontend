@@ -169,7 +169,7 @@ export default {
 
 #calendar-frame :deep(.el-calendar) {
   width: 48%;
-  height: 300px;
+  /*height: 300px;*/
   --el-calendar-selected-bg-color: rgb(240, 249, 254);
 }
 
@@ -191,7 +191,7 @@ export default {
 
 #book-list-frame {
   width: 48%;
-  height: 300px;
+  height: 400px;
   border: 1px solid #ebeef5;
   overflow-y: scroll;
   overflow-x: hidden;
