@@ -98,7 +98,11 @@ export default {
     },
     sendEmailVerifyCode() {
 
-      this.$request.post('/user/verify', {email: this.registerForm.email}).then(() => {
+      this.$request.post('/user/verify', {}, {
+        params: {
+          email: this.registerForm.email
+        }
+      }).then(() => {
         ElMessage.success('发送成功')
       })
       // this.$refs.registerFormRef.validateField('email', (isGood) => {
@@ -122,6 +126,8 @@ export default {
           }
           this.$request.post('/user/register', registerInfo).then(() => {
             ElMessage.success('注册成功')
+            setTimeout(() =>
+                this.$router.push('/login'), 1000)
           }).catch((response) => {
             ElMessage.error('注册失败：\n' + response.msg)
           })

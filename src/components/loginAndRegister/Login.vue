@@ -83,14 +83,12 @@ export default {
             email: this.loginForm.usernameOrEmail.includes('@') ? this.loginForm.usernameOrEmail : null,
           }
           // 向后端发起登录请求
-          // this.$request.post('/user/login', loginInfo).then(() => {
-          //   ElMessage.success('login Success!')
-          //   console.log(loginInfo.username)
-          //   localStorage.setItem("username", loginInfo.username)
-          //   setTimeout(() => window.location.reload(), 1000)
-          // }).catch((response) => {
-          //   ElMessage.error('login Failed!\n' + response.msg)
-          // })
+          this.$request.post('/user/login', loginInfo).then(() => {
+            ElMessage.success('login Success!')
+            this.$router.push('/home')
+          }).catch((response) => {
+            ElMessage.error('login Failed!\n' + response.msg)
+          })
         } else {
           console.log(invalidFields)
         }
