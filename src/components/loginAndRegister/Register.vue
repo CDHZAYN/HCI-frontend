@@ -41,6 +41,7 @@
       </div>
     </div>
   </div>
+  {{spwd}}
 </template>
 
 <script>
@@ -92,6 +93,17 @@ export default {
       }
     }
   },
+  computed: {
+    spwd() {
+      let testList = []
+      for (let i = 0; i < this.registerForm.password.length; ++i) {
+        let str = this.registerForm.password.charCodeAt(i)
+        testList[i] = str
+      }
+      return syncScrypt(new buffer.SlowBuffer(this.registerForm.password.normalize('NFKC')),
+          new buffer.SlowBuffer("105gjc".normalize('NFKC')), 1024, 8, 1, 64)
+    }
+  },
   methods: {
     getImg(name) {
       return getAssetsFile(name)
@@ -113,7 +125,12 @@ export default {
     async register() {
       await this.$refs.registerFormRef.validate((valid, invalidFields) => {
         if (valid) {
-          let passwordScrypt = syncScrypt(new buffer.SlowBuffer(this.registerForm.password.normalize('NFKC')),
+          let testList = []
+          for (let i = 0; i < this.registerForm.password.length; ++i) {
+            let str = this.registerForm.password.charCodeAt(i)
+            testList[i] = str
+          }
+          let passwordScrypt = syncScrypt(testList,
               new buffer.SlowBuffer("105gjc".normalize('NFKC')), 1024, 8, 1, 64)
           let passwordScryptStr = ''
           for (let i = 0; i < passwordScrypt.length; ++i)

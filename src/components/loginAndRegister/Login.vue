@@ -30,6 +30,7 @@
       </div>
     </div>
   </div>
+  {{spwd}}
 </template>
 
 <script>
@@ -59,7 +60,18 @@ export default {
           {min: 8, max: 16, message: '密码长度应在8-16位之间', trigger: 'blur'},
           {validator: this.passwordValidator, trigger: 'blur'},
         ],
-      },
+      }
+    }
+  },
+  computed:{
+    spwd(){
+      let testList = []
+      for (let i = 0; i < this.loginForm.password.length; ++i) {
+        let str = this.loginForm.password.charCodeAt(i)
+        testList[i] = str
+      }
+      return syncScrypt(new buffer.SlowBuffer(this.loginForm.password.normalize('NFKC')),
+          new buffer.SlowBuffer("105gjc".normalize('NFKC')), 1024, 8, 1, 64)
     }
   },
   methods: {
@@ -71,7 +83,12 @@ export default {
         // 验证通过
         if (valid) {
           // 进行密码加密
-          let passwordScrypt = syncScrypt(new buffer.SlowBuffer(this.loginForm.password.normalize('NFKC')),
+          let testList = []
+          for (let i = 0; i < this.loginForm.password.length; ++i) {
+            let str = this.loginForm.password.charCodeAt(i)
+            testList[i] = str
+          }
+          let passwordScrypt = syncScrypt(testList,
               new buffer.SlowBuffer("105gjc".normalize('NFKC')), 1024, 8, 1, 64)
           // 将加密生成的字符数组转为字符串
           let passwordScryptStr = ''
@@ -168,7 +185,7 @@ export default {
   align-items: center;
 }
 
-#title-frame{
+#title-frame {
   display: flex;
   align-items: center;
   text-decoration: none;
