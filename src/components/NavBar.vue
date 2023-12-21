@@ -28,7 +28,7 @@ export default {
   },
   data() {
     return {
-      hasLogin: true,
+      hasLogin: false,
       pageSelecting: 1,
       pageSelectBlockOffset: 0,
       pageSelectBlockWidth: 0,

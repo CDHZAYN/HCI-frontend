@@ -96,6 +96,16 @@ export default {
     getImg(name) {
       return getAssetsFile(name)
     },
+    sendEmailVerifyCode() {
+
+      this.$request.post('/user/verify', {email: this.registerForm.email}).then(() => {
+        ElMessage.success('发送成功')
+      })
+      // this.$refs.registerFormRef.validateField('email', (isGood) => {
+      //   if (isGood) {
+      //   }
+      // })
+    },
     async register() {
       await this.$refs.registerFormRef.validate((valid, invalidFields) => {
         if (valid) {
@@ -107,13 +117,13 @@ export default {
           let registerInfo = {
             username: this.registerForm.username,
             password: passwordScryptStr,
-            email: this.registerForm.email
+            email: this.registerForm.email,
+            verifyCode: this.registerForm.emailCode
           }
           this.$request.post('/user/register', registerInfo).then(() => {
-            ElMessage.success('Register success!')
-            this.changeMode()
+            ElMessage.success('注册成功')
           }).catch((response) => {
-            ElMessage.error('Register Failed!\n' + response.msg)
+            ElMessage.error('注册失败：\n' + response.msg)
           })
         } else {
           console.log(invalidFields)
@@ -130,9 +140,7 @@ export default {
     passwordValidator(rule, value, callback) {
       if (!value.match(/^(?![a-zA-z]+$)(?!d+ $)(?!@#$%^&*]+ $)(?![a-zA-z\d]+ $)(?![a zA-z!@#$%^&*]+$)(?![d!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]+$/))
         return callback(new Error('密码应且只应同时包含英文字符和数字'))
-      if (this.mode === 'register')
-        return this.$refs.registerFormRef.validateField('confirmPassword', () => null)
-      return callback()
+      return this.$refs.registerFormRef.validateField('confirmPassword', () => null)
     },
     confirmPasswordValidator(rule, value, callback) {
       if (value !== this.registerForm.password)
@@ -190,7 +198,7 @@ export default {
   align-items: center;
 }
 
-#title-frame{
+#title-frame {
   display: flex;
   align-items: center;
   text-decoration: none;
