@@ -10,18 +10,22 @@
     </div>
     <img src="/logo.png" id="icon" alt="icon">
     <div id="user">
-      <a v-if="hasLogin" @click="$emit('openSetting')" style="cursor: pointer">啥ZAYN</a>
+      <a v-if="hasLogin" @click="isSettingOpen = true" style="cursor: pointer">啥ZAYN</a>
       <a href="/login" v-else>登录/注册</a>
     </div>
   </div>
+  <SettingDrawer :level1Open="isSettingOpen" @close-setting="isSettingOpen = false" @unlogin="unlogin"></SettingDrawer>
 </template>
 
 <script>
 import {nextTick} from "vue";
 import routes from "../network/routes.js";
+import {ElMessage} from "element-plus";
+import SettingDrawer from "./setting/SettingDrawer.vue";
 
 export default {
   name: "NavBar",
+  components: {SettingDrawer},
   props: {
     color: String,
     routes: Array
@@ -29,9 +33,16 @@ export default {
   data() {
     return {
       hasLogin: false,
+      userInfo: {
+        userId: '',
+        username: '',
+        email: '',
+      },
       pageSelecting: 1,
       pageSelectBlockOffset: 0,
       pageSelectBlockWidth: 0,
+
+      isSettingOpen: false,
     }
   },
   watch: {
@@ -55,8 +66,32 @@ export default {
       }
     }
   },
-  methods: {},
+  methods: {
+    unlogin() {
+      localStorage.setItem('userId', '')
+      this.hasLogin = false
+      this.isSettingOpen = false
+    }
+  },
   mounted() {
+
+    const userId = localStorage.getItem('userId')
+    console.log(userId === true)
+
+    if (userId && userId !== 'undefined') {
+      console.log('in', userId)
+      this.$request.get('/user/getAccount', {params: {userId}}).then((res) => {
+        console.log('relogin')
+        this.userInfo = res.msg
+        localStorage.setItem('userId', res.msg.userId)
+        this.hasLogin = true
+      }).catch((err) => {
+        console.log(err)
+        localStorage.setItem('userId', '')
+        ElMessage.error('登录状态过期，请重新登录。')
+      })
+    }
+
     // for(let i = 0; i < this.routes.length; ++i)
     this.pageSelectBlockOffset = 30
     this.pageSelectBlockWidth = this.$refs['page' + 1][0].clientWidth + 20

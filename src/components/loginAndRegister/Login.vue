@@ -83,11 +83,13 @@ export default {
             email: this.loginForm.usernameOrEmail.includes('@') ? this.loginForm.usernameOrEmail : null,
           }
           // 向后端发起登录请求
-          this.$request.post('/user/login', loginInfo).then(() => {
-            ElMessage.success('login Success!')
+          this.$request.post('/user/login', loginInfo).then((res) => {
+            ElMessage.success('登陆成功')
+            console.log(res.msg)
+            localStorage.setItem('userId', res.msg.userId)
             this.$router.push('/home')
           }).catch((response) => {
-            ElMessage.error('login Failed!\n' + response.msg)
+            ElMessage.error('登陆失败！\n' + response.msg)
           })
         } else {
           console.log(invalidFields)
@@ -97,13 +99,13 @@ export default {
     usernameOrEmailValidator(rule, value, callback) {
       if (value.includes('@'))
         return this.emailValidator(rule, value, callback)
-      if (value.length > 16 || value.length < 5)
+      if (value.length >= 16 || value.length <= 1)
         return this.usernameValidator(rule, value, callback)
       return callback()
     },
     usernameValidator(rule, value, callback) {
-      if (value.length > 16 || value.length < 5)
-        return callback(new Error('用户名长度应在5-16位之间'))
+      if (value.length >= 16 || value.length <= 1)
+        return callback(new Error('用户名长度应在2-16位之间'))
       if (value.includes('@'))
         return callback(new Error('用户名中不应包含’@‘字符'))
       return callback()

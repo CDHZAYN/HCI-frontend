@@ -62,10 +62,10 @@ export default {
         emailCode: ''
       },
       registerRules: {
-        // 用户名验证,5-16位,不包含@(方便邮箱判定)
+        // 用户名验证,2-16位,不包含@(方便邮箱判定)
         username: [
           {required: true, message: '输入不能为空', trigger: 'blur'},
-          {min: 5, max: 16, message: '用户名长度应在8-16位之间', trigger: 'blur'},
+          {min: 2, max: 16, message: '用户名长度应在2-16位之间', trigger: 'blur'},
           {validator: this.usernameValidator, trigger: 'blur'},
         ],
         // 密码验证,8-16位且同时包含数字和字母

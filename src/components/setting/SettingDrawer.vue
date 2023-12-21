@@ -31,7 +31,7 @@
             </el-icon>
             <span>预约记录</span>
           </el-menu-item>
-          <el-menu-item index="4">
+          <el-menu-item index="4" @click="unlogin">
             <el-icon>
               <Remove></Remove>
             </el-icon>
@@ -62,6 +62,7 @@ import {Close, Setting, Connection, Bell, Remove} from '@element-plus/icons-vue'
 import Account from "./components/Account.vue";
 import Fellow from "./components/Fellow.vue";
 import BookHistory from "./components/BookHistory.vue";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 export default {
   name: "SettingDrawer",
@@ -86,6 +87,20 @@ export default {
     close() {
       this.level2Type = 0
       setTimeout(() => this.$emit('closeSetting'), 50)
+    },
+    unlogin() {
+      ElMessageBox.confirm(
+          '确认退出账户登录？',
+          '请确认',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+      ).then(() => {
+        this.$emit('unlogin')
+        ElMessage.success('您已退出登录。')
+      })
     }
   }
 }
@@ -217,7 +232,7 @@ export default {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
   height: 100vh;
   overflow-y: scroll;
-  overscroll-behavior:contain;
+  overscroll-behavior: contain;
 }
 
 .level2::-webkit-scrollbar {

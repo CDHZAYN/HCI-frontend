@@ -1,21 +1,19 @@
 <template>
   <div style="min-height: calc(100vh - 400px);">
-    <nav-bar :routes="routes" v-show="isHeadTailNeeded" @open-setting="isSettingOpen = true"/>
+    <nav-bar :routes="routes" v-if="isHeadTailNeeded"/>
     <router-view/>
   </div>
-  <Bottom v-show="isHeadTailNeeded"></Bottom>
-  <Setting :level1Open="isSettingOpen" @close-setting="isSettingOpen = false"></Setting>
+  <Bottom v-if="isHeadTailNeeded"></Bottom>
 </template>
 
 <script>
 import index from './network/routes.js'
 import NavBar from "./components/NavBar.vue";
 import Bottom from "./components/Bottom.vue";
-import Setting from "./components/setting/SettingDrawer.vue";
 import {nextTick} from "vue";
 
 export default {
-  components: {Setting, NavBar, Bottom},
+  components: {NavBar, Bottom},
   data() {
     return {
       routes: index,
