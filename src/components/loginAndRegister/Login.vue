@@ -30,7 +30,6 @@
       </div>
     </div>
   </div>
-  {{spwd}}
 </template>
 
 <script>
@@ -61,17 +60,6 @@ export default {
           {validator: this.passwordValidator, trigger: 'blur'},
         ],
       }
-    }
-  },
-  computed:{
-    spwd(){
-      let testList = []
-      for (let i = 0; i < this.loginForm.password.length; ++i) {
-        let str = this.loginForm.password.charCodeAt(i)
-        testList[i] = str
-      }
-      return syncScrypt(new buffer.SlowBuffer(this.loginForm.password.normalize('NFKC')),
-          new buffer.SlowBuffer("105gjc".normalize('NFKC')), 1024, 8, 1, 64)
     }
   },
   methods: {

@@ -27,8 +27,8 @@
         <el-form-item prop="email">
           <el-input v-model="registerForm.email" placeholder="邮箱"/>
         </el-form-item>
-        <el-form-item prop="emailCode">
-          <el-input v-model="registerForm.emailCode" placeholder="邮箱验证码"
+        <el-form-item prop="verifyCode">
+          <el-input v-model="registerForm.verifyCode" placeholder="邮箱验证码"
                     style="width: 75%; margin-right: 5%"/>
           <el-button @click="sendEmailVerifyCode()" type="primary" style="width: 20%">send</el-button>
         </el-form-item>
@@ -41,7 +41,6 @@
       </div>
     </div>
   </div>
-  {{spwd}}
 </template>
 
 <script>
@@ -60,8 +59,9 @@ export default {
         password: '',
         confirmPassword: '',
         email: '',
-        emailCode: ''
+        verifyCode: ''
       },
+      correctVerifyCode: '',
       registerRules: {
         // 用户名验证,2-16位,不包含@(方便邮箱判定)
         username: [
@@ -87,21 +87,11 @@ export default {
           {validator: this.emailValidator, trigger: 'blur'},
         ],
         // 邮箱验证码验证,需要跟后端回传的验证码匹配
-        emailCode: [
-          {required: true, message: '输入不能为空', trigger: 'blur'}
+        verifyCode: [
+          {required: true, message: '输入不能为空', trigger: 'blur'},
+          {validator: this.verifyCodeValidator, trigger: 'blur'}
         ],
       }
-    }
-  },
-  computed: {
-    spwd() {
-      let testList = []
-      for (let i = 0; i < this.registerForm.password.length; ++i) {
-        let str = this.registerForm.password.charCodeAt(i)
-        testList[i] = str
-      }
-      return syncScrypt(new buffer.SlowBuffer(this.registerForm.password.normalize('NFKC')),
-          new buffer.SlowBuffer("105gjc".normalize('NFKC')), 1024, 8, 1, 64)
     }
   },
   methods: {
@@ -109,18 +99,19 @@ export default {
       return getAssetsFile(name)
     },
     sendEmailVerifyCode() {
-
-      this.$request.post('/user/verify', {}, {
-        params: {
-          email: this.registerForm.email
+      this.$refs.registerFormRef.validateField('email', (isGood) => {
+        if (isGood) {
+          this.$request.post('/user/verify', {}, {
+            params: {
+              email: this.registerForm.email
+            }
+          }).then((res) => {
+            console.log(res.msg)
+            this.correctVerifyCode = res.msg
+            ElMessage.success('发送成功')
+          })
         }
-      }).then(() => {
-        ElMessage.success('发送成功')
       })
-      // this.$refs.registerFormRef.validateField('email', (isGood) => {
-      //   if (isGood) {
-      //   }
-      // })
     },
     async register() {
       await this.$refs.registerFormRef.validate((valid, invalidFields) => {
@@ -139,7 +130,7 @@ export default {
             username: this.registerForm.username,
             password: passwordScryptStr,
             email: this.registerForm.email,
-            verifyCode: this.registerForm.emailCode
+            verifyCode: this.registerForm.verifyCode
           }
           this.$request.post('/user/register', registerInfo).then(() => {
             ElMessage.success('注册成功')
@@ -173,6 +164,12 @@ export default {
     emailValidator(rule, value, callback) {
       if (!value.match(/^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/))
         return callback(new Error('异常的邮箱格式'))
+      return callback()
+    },
+    verifyCodeValidator(rule, value, callback) {
+      console.log(this.registerForm.verifyCode, this.correctVerifyCode)
+      if (this.registerForm.verifyCode !== this.correctVerifyCode)
+        return callback(new Error('验证码不匹配'))
       return callback()
     },
   }
