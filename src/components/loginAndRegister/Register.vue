@@ -237,7 +237,7 @@ export default {
 }
 
 #title-zayn {
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 70%);
+  background-image: -webkit-linear-gradient(bottom left, var(--pink) 30%, var(--blue) 70%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   padding: 0 5px 0 10px;
@@ -255,12 +255,12 @@ export default {
   margin-top: 10px;
   width: 100%;
   border-color: unset;
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 70%);
+  background-image: -webkit-linear-gradient(bottom left, var(--pink) 30%, var(--blue) 70%);
   font-weight: bold;
 }
 
 #main-frame #button:hover {
-  background-image: -webkit-linear-gradient(bottom left, rgb(224, 119, 159) 30%, rgb(148, 213, 252) 70%);
+  background-image: -webkit-linear-gradient(bottom left, var(--light-pink) 30%, var(--light-blue) 70%);
 }
 
 #main-frame #button:active {
@@ -269,7 +269,7 @@ export default {
 
 #link-frame a {
   font-size: 13px;
-  color: rgb(115, 204, 255);
+  color: var(--blue);
   text-decoration: none;
   display: inline-block;
 }

@@ -38,8 +38,10 @@
       <el-input v-model="detail.note" maxlength="30" show-word-limit type="textarea" :autosize="{ maxRows: 3 }"/>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submitDetail">确认</el-button>
-      <el-button type="danger" @click="deleteDetail">删除</el-button>
+      <div id="confirm-button-frame">
+        <el-button type="primary" @click="submitDetail">确认</el-button>
+        <el-button type="danger" @click="deleteDetail">删除</el-button>
+      </div>
     </el-form-item>
   </el-form>
 </template>
@@ -172,7 +174,7 @@ export default {
 #hr-division-line {
   margin: 20px 0;
   height: 1px;
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);
+  background-image: -webkit-linear-gradient(bottom left, rgb(255, 94, 155) 30%, rgb(115, 204, 255) 50%);
 }
 
 :deep(label) {
@@ -184,8 +186,43 @@ export default {
   width: 300px;
 }
 
-:deep(.el-textarea__inner){
+:deep(.el-textarea__inner) {
   max-height: 80px;
+}
+
+#confirm-button-frame :deep(.el-button--danger) {
+  margin-left: 20px;
+  background-color: var(--pink);
+}
+
+#confirm-button-frame :deep(.el-button--danger:hover) {
+  background-color: var(--light-pink);
+}
+
+#confirm-button-frame :deep(.el-button--danger:active) {
+  background-color: #d04e77;
+}
+
+#confirm-button-frame :deep(.el-button--danger[disabled]) {
+  background-color: var(--light-pink);
+}
+
+#confirm-button-frame :deep(.el-button--primary) {
+  border-color: unset;
+  background-color: var(--blue);
+  /*font-weight: bold;*/
+}
+
+#confirm-button-frame :deep(.el-button--primary:hover) {
+  background-color: var(--light-blue);
+}
+
+#confirm-button-frame :deep(.el-button--primary:active) {
+  background-color: #3594c5;
+}
+
+#confirm-button-frame :deep(.el-button--primary[disabled]) {
+  background-color: var(--light-blue);
 }
 
 </style>

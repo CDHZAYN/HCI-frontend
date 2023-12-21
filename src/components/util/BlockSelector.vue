@@ -21,8 +21,8 @@ export default {
       blockOffsetY: 0,
       blockWidth: 0,
       colorMap:{
-        'blue': 'rgb(115, 204, 255)',
-        'pink': 'rgb(225, 94, 145)',
+        'blue': 'var(--light-blue)',
+        'pink': 'var(--light-pink)',
       }
     }
   },
@@ -67,7 +67,6 @@ export default {
   position: absolute;
   z-index: -1;
   height: 30px;
-  background-color: rgb(115, 204, 255);
   transition: all 0.2s ease-in-out;
   border-radius: 3px;
 }

@@ -152,7 +152,7 @@ export default {
 }
 
 #event-article-frame .event-article-item .event-article-item-text .book-event {
-  color: rgb(115, 204, 255);
+  color: var(--blue);
 }
 
 #event-article-frame .event-article-item h4 {

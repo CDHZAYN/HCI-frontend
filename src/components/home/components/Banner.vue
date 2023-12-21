@@ -166,7 +166,7 @@ export default {
   position: absolute;
   top: 50px;
   left: 200px;
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);
+  background-image: -webkit-linear-gradient(bottom left, var(--pink) 30%, var(--blue) 50%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

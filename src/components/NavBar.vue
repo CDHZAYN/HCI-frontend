@@ -10,7 +10,12 @@
     </div>
     <img src="/logo.png" id="icon" alt="icon">
     <div id="user">
-      <a v-if="hasLogin" @click="isSettingOpen = true" style="cursor: pointer">啥ZAYN</a>
+      <div v-if="hasLogin" id="user-link-frame">
+        <el-icon :color="'var(--blue)'" :size="20">
+          <UserFilled/>
+        </el-icon>
+        <a @click="isSettingOpen = true" style="cursor: pointer">{{userInfo.username}}</a>
+      </div>
       <a href="/login" v-else>登录/注册</a>
     </div>
   </div>
@@ -22,20 +27,21 @@ import {nextTick} from "vue";
 import routes from "../network/routes.js";
 import {ElMessage} from "element-plus";
 import SettingDrawer from "./setting/SettingDrawer.vue";
+import {UserFilled} from "@element-plus/icons-vue";
 
 export default {
   name: "NavBar",
-  components: {SettingDrawer},
+  components: {UserFilled, SettingDrawer},
   props: {
     color: String,
     routes: Array
   },
   data() {
     return {
-      hasLogin: false,
+      hasLogin: true,
       userInfo: {
         userId: '',
-        username: '',
+        username: 'dsfds',
         email: '',
       },
       pageSelecting: 1,
@@ -74,7 +80,7 @@ export default {
     }
   },
   mounted() {
-
+    console.log('get userId from local storage: ', localStorage.getItem('userId'))
     const userId = localStorage.getItem('userId')
     console.log(userId === true)
 
@@ -83,7 +89,10 @@ export default {
       this.$request.get('/user/getAccount', {params: {userId}}).then((res) => {
         console.log('relogin')
         this.userInfo = res.msg
-        localStorage.setItem('userId', res.msg.userId)
+
+        this.userInfo.userId = this.userInfo.id
+        this.userInfo.id = undefined
+
         this.hasLogin = true
       }).catch((err) => {
         console.log(err)
@@ -132,7 +141,7 @@ export default {
   z-index: -1;
   top: 50px;
   height: 5px;
-  background-image: linear-gradient(to right, rgb(225, 94, 145) 20%, rgb(115, 204, 255) 80%);
+  background-image: linear-gradient(to right, var(--pink) 20%, var(--blue) 80%);
   transition: all 0.2s ease-in-out;
 }
 
@@ -166,6 +175,10 @@ a {
   top: 10px;
   right: 0;
   /*transform: translate(-50%, 8px);*/
+}
+
+#user #user-link-frame :deep(.el-icon){
+  transform: translate(-5px, 2px);
 }
 
 #background #user a {

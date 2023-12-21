@@ -1,6 +1,6 @@
 <template>
   <div id="main-frame">
-    <el-icon :size="80" :color="'rgb(115, 204, 255)'">
+    <el-icon :size="80" :color="'var(--blue)'">
       <CircleCheck/>
     </el-icon>
     <h1>您的预约已提交</h1>

@@ -4,7 +4,7 @@
     <h1>{{ brief.title }}</h1>
     <h4>{{ brief.date }}</h4>
     <p>这是正文。</p>
-    <div id="button-frame">
+    <div id="confirm-button-frame">
       <el-button @click="login()" id="button" type="primary">现在预约</el-button>
     </div>
   </div>
@@ -34,7 +34,7 @@ export default {
   padding: 0 200px 30px 200px;
 }
 
-#button-frame{
+#confirm-button-frame{
   text-align: center;
 }
 
@@ -44,15 +44,15 @@ export default {
   height: 50px;
   font-size: 20px;
   border-color: unset;
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 70%);
+  background-image: -webkit-linear-gradient(bottom left, var(--pink) 30%, var(--blue) 70%);
   font-weight: bold;
 }
 
-#button-frame #button:hover {
-  background-image: -webkit-linear-gradient(bottom left, rgb(224, 119, 159) 30%, rgb(148, 213, 252) 70%);
+#confirm-button-frame #button:hover {
+  background-image: -webkit-linear-gradient(bottom left, var(--light-pink) 30%, var(--light-blue) 70%);
 }
 
-#button-frame #button:active {
+#confirm-button-frame #button:active {
   background-image: -webkit-linear-gradient(bottom left, rgb(194, 80, 125) 30%, rgb(76, 135, 168) 70%);
 }
 

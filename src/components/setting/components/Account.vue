@@ -27,7 +27,9 @@
       <el-input v-model="password.confirmNewPwd" show-password/>
     </el-form-item>
     <el-form-item>
+      <div id="button-frame">
       <el-button type="primary" @click="submit">确认</el-button>
+      </div>
     </el-form-item>
   </el-form>
 </template>
@@ -70,29 +72,29 @@ export default {
     async submit(){
       await this.$refs.passwordRef.validate((valid, invalidFields) => {
         if (valid) {
-          let passwordScrypt = syncScrypt(new buffer.SlowBuffer(this.registerForm.password.normalize('NFKC')),
+          let testList = []
+          for (let i = 0; i < this.password.newPwd.length; ++i) {
+            let str = this.password.newPwd.charCodeAt(i)
+            testList[i] = str
+          }
+          let passwordScrypt = syncScrypt(testList,
               new buffer.SlowBuffer("105gjc".normalize('NFKC')), 1024, 8, 1, 64)
           let passwordScryptStr = ''
           for (let i = 0; i < passwordScrypt.length; ++i)
             passwordScryptStr += String.fromCharCode(passwordScrypt[i])
-          let registerInfo = {
-            username: this.registerForm.username,
-            password: passwordScryptStr,
-            email: this.registerForm.email
-          }
-          this.$request.post('/user/register', registerInfo).then(() => {
-            ElMessage.success('Register success!')
-            this.changeMode()
-          }).catch((response) => {
-            ElMessage.error('Register Failed!\n' + response.msg)
-          })
+          // this.$request.post('/user/register', registerInfo).then(() => {
+          //   ElMessage.success('Register success!')
+          //   this.changeMode()
+          // }).catch((response) => {
+          //   ElMessage.error('Register Failed!\n' + response.msg)
+          // })
         } else {
           console.log(invalidFields)
         }
       })
     },
     passwordValidator(rule, value, callback) {
-      if (!value.match(/^(?![a-zA-z]+$)(?!d+ $)(?!@#$%^&*]+ $)(?![a-zA-z\d]+ $)(?![a zA-z!@#$%^&*]+$)(?![d!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]+$/))
+      if (!value.match(/^(?=.*[a-zA-Z])(?=.*\d).+$/))
         return callback(new Error('密码应且只应同时包含英文字符和数字'))
       if (this.mode === 'register')
         return this.$refs.registerFormRef.validateField('confirmPassword', () => null)
@@ -121,7 +123,7 @@ h4{
 #hr-division-line {
   margin: 20px 0;
   height: 1px;
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);
+  background-image: -webkit-linear-gradient(bottom left, var(--pink) 30%, var(--blue) 70%);
 }
 
 :deep(label){
@@ -131,6 +133,24 @@ h4{
 
 :deep(.el-input){
   width: 300px;
+}
+
+#button-frame :deep(.el-button) {
+  border-color: unset;
+  background-color: var(--blue);
+  /*font-weight: bold;*/
+}
+
+#button-frame :deep(.el-button:hover) {
+  background-color: var(--light-blue);
+}
+
+#button-frame :deep(.el-button:active) {
+  background-color: #3594c5;
+}
+
+#button-frame :deep(.el-button[disabled]) {
+  background-color: var(--light-blue);
 }
 
 </style>

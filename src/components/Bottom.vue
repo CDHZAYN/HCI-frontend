@@ -180,7 +180,7 @@ export default {
 }
 
 #division-line {
-  background-image: linear-gradient(to bottom, rgb(225, 94, 145) 20%, rgb(115, 204, 255) 80%);
+  background-image: linear-gradient(to bottom, var(--pink) 20%, var(--blue) 80%);
   width: 4px; /*设置宽高*/
   height: 300px;
 }

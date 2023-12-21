@@ -206,7 +206,7 @@ export default {
 #hr-division-line {
   margin: 20px 0;
   height: 1px;
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);
+  background-image: -webkit-linear-gradient(bottom left, var(--pink) 30%, var(--blue) 70%);
 }
 
 #level1 :deep(.el-menu) {
@@ -247,7 +247,7 @@ export default {
 .level2::-webkit-scrollbar-thumb {
   border-radius: 10px;
   /*-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);*/
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);
+  background-image: -webkit-linear-gradient(bottom left, var(--light-pink) 30%, var(--light-blue) 70%);
 }
 
 </style>

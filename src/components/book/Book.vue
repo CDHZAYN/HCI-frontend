@@ -31,7 +31,7 @@
         <BookCounselor :type="bookType" @next-to="nextTo"></BookCounselor>
       </div>
       <div v-else-if="active === 2">
-        <BookInfo  @next-to="nextTo"></BookInfo>
+        <BookInfo @next-to="nextTo"></BookInfo>
       </div>
       <div v-else-if="active === 3">
         <BookSuccess @next-to="nextTo"></BookSuccess>
@@ -63,17 +63,17 @@ export default {
   },
   methods: {
     backTo(step) {
-      if(this.active === 3 && step !== 0)
+      if (this.active === 3 && step !== 0)
         return
       if (this.active > step)
         this.active = step
     },
-    nextTo(step, info){
-      if(step === 1){
+    nextTo(step, info) {
+      if (step === 1) {
         this.bookType = info.index
-      } else if(step === 2){
+      } else if (step === 2) {
 
-      } else if(step === 3){
+      } else if (step === 3) {
 
       }
       this.active = step
@@ -101,6 +101,10 @@ export default {
 :deep(.el-steps) {
   background: none;
   /*cursor: pointer;*/
+}
+
+:deep(.is-finish) {
+  color: var(--blue) !important;
 }
 
 :deep(.el-step:nth-child(2)) {

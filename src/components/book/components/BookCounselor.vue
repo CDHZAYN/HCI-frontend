@@ -41,9 +41,10 @@
       </div>
     </div>
   </div>
-  <div style="margin-top: 30px; width: 100%; text-align: center">
+  <div id="confirm-button-frame">
     <el-button type="primary" :disabled="bookItemSelecting === -1"
-               @click="$emit('nextTo', 2, {})">确认选择</el-button>
+               @click="$emit('nextTo', 2, {})">确认选择
+    </el-button>
   </div>
 </template>
 
@@ -155,7 +156,7 @@ export default {
 #hr-division-line {
   margin: 20px 0;
   height: 1px;
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);
+  background-image: -webkit-linear-gradient(bottom left, var(--pink) 30%, var(--blue) 70%);
 }
 
 #calendar-frame {
@@ -182,7 +183,8 @@ export default {
 }
 
 .date-item .date-selecting {
-  color: rgb(115, 204, 255);
+  color: var(--blue);
+  font-weight: bold;
 }
 
 .date-item .date-has-available {
@@ -209,7 +211,7 @@ export default {
 #book-list-frame::-webkit-scrollbar-thumb {
   border-radius: 10px;
   /*-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);*/
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);
+  background-image: -webkit-linear-gradient(bottom left, var(--light-pink) 30%, var(--light-blue) 70%);
 }
 
 #book-list-frame .book-item-frame {
@@ -230,7 +232,7 @@ export default {
   bottom: 0;
   z-index: -1;
   width: 100%;
-  background-image: linear-gradient(45deg, rgb(115, 204, 255) 0, transparent 30%);
+  background-image: linear-gradient(45deg, var(--blue) 0, transparent 30%);
   transition: opacity 0.2s linear;
   opacity: 0;
 }
@@ -279,5 +281,27 @@ export default {
   font-weight: normal;
 }
 
+#confirm-button-frame {
+  margin-top: 30px;
+  width: 100%;
+  text-align: center;
+}
+
+#confirm-button-frame :deep(.el-button) {
+  border-color: unset;
+  background-color: var(--blue);
+}
+
+#confirm-button-frame :deep(.el-button:hover) {
+  background-color: var(--light-blue);
+}
+
+#confirm-button-frame :deep(.el-button:active) {
+  background-color: #3594c5;
+}
+
+#confirm-button-frame :deep(.el-button[disabled]) {
+  background-color: var(--light-blue);
+}
 
 </style>

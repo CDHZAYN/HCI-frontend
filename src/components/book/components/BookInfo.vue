@@ -36,7 +36,13 @@
 
   </div>
   <div id="hr-division-line"></div>
-  <div id="button-frame">
+  <div class="detail-item-frame">
+    <h2>
+      预约金额
+    </h2>
+  </div>
+  <div id="hr-division-line"></div>
+  <div id="confirm-button-frame">
     <el-button @click="submit" id="button" type="primary">预约</el-button>
   </div>
 </template>
@@ -78,7 +84,7 @@ export default {
         this.fellowDeleting.push(index)
       }
     },
-    submit(){
+    submit() {
       ElMessageBox.confirm(
           '您确认所填信息真实无误，并确认进行本次预约吗？',
           '',
@@ -125,7 +131,7 @@ export default {
   bottom: 0;
   z-index: 2;
   width: 100%;
-  background-image: linear-gradient(45deg, rgb(115, 204, 255) 0, transparent 30%);
+  background-image: linear-gradient(45deg, var(--blue) 0, transparent 30%);
   transition: opacity 0.2s linear;
   opacity: 0;
 }
@@ -149,7 +155,7 @@ export default {
 }
 
 p.deleting-fellow {
-  background-color: rgb(115, 204, 255);
+  background-color: var(--blue);
   color: white;
 }
 
@@ -159,12 +165,25 @@ p.deleting-fellow {
 
 .fellow-control-frame :deep(.el-button) {
   margin-left: 20px;
+  background-color: var(--pink);
+}
+
+.fellow-control-frame :deep(.el-button:hover) {
+  background-color: var(--light-pink);
+}
+
+.fellow-control-frame :deep(.el-button:active) {
+  background-color: #d04e77;
+}
+
+.fellow-control-frame :deep(.el-button[disabled]) {
+  background-color: var(--light-pink);
 }
 
 #hr-division-line {
   margin: 20px 0;
   height: 1px;
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);
+  background-image: -webkit-linear-gradient(bottom left, var(--pink) 30%, var(--blue) 70%);
 }
 
 .input-item-frame {
@@ -185,7 +204,7 @@ p.deleting-fellow {
   max-height: 200px;
 }
 
-#button-frame{
+#confirm-button-frame {
   text-align: center;
 }
 
@@ -195,16 +214,18 @@ p.deleting-fellow {
   height: 50px;
   font-size: 20px;
   border-color: unset;
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 70%);
+  background-image: -webkit-linear-gradient(bottom left, var(--pink) 30%, var(--blue) 70%);
   font-weight: bold;
 }
 
-#button-frame #button:hover {
-  background-image: -webkit-linear-gradient(bottom left, rgb(224, 119, 159) 30%, rgb(148, 213, 252) 70%);
+#confirm-button-frame #button:hover {
+  background-image: -webkit-linear-gradient(bottom left, var(--light-pink) 30%, var(--light-blue) 70%);
 }
 
-#button-frame #button:active {
+#confirm-button-frame #button:active {
   background-image: -webkit-linear-gradient(bottom left, rgb(194, 80, 125) 30%, rgb(76, 135, 168) 70%);
 }
+
+
 
 </style>

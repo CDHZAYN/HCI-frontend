@@ -78,7 +78,7 @@ export default {
     width: 480px;
     height: 181px;
     opacity: .8;
-    background-image: linear-gradient(to bottom, rgb(225, 94, 145) 20%, rgb(115, 204, 255) 80%);
+    background-image: linear-gradient(to bottom, var(--pink) 20%, var(--blue) 80%);
     transform: translateY(180px);
     transition: transform 0.5s ease-in-out;
   }

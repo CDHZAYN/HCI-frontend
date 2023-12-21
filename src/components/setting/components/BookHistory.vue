@@ -51,8 +51,10 @@
 
       </div>
       <div id="hr-division-line"></div>
-      <el-button type="primary">保存更改</el-button>
-      <el-button type="danger">取消预约</el-button>
+      <div id="confirm-button-frame">
+        <el-button type="primary">保存更改</el-button>
+        <el-button type="danger">取消预约</el-button>
+      </div>
     </el-collapse-item>
   </el-collapse>
   <div style="height: 30px"></div>
@@ -165,7 +167,7 @@ export default {
 #hr-division-line {
   margin: 20px 0;
   height: 1px;
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);
+  background-image: -webkit-linear-gradient(bottom left, rgb(255, 94, 155) 30%, rgb(115, 204, 255) 50%);
 }
 
 :deep(.el-collapse-item__content .detail-item-frame) {
@@ -233,19 +235,54 @@ export default {
   margin-left: 20px;
 }
 
-:deep(.input-item-frame){
+:deep(.input-item-frame) {
   width: calc(100% - 2px);
   padding: 10px;
   box-sizing: border-box;
   border: 1px solid #ebeef5;
 }
 
-:deep(.input-item-frame h3){
+:deep(.input-item-frame h3) {
   margin: 0 0 5px 0;
 }
 
 :deep(.el-textarea__inner) {
   max-height: 200px;
+}
+
+.fellow-control-frame :deep(.el-button), #confirm-button-frame :deep(.el-button--danger) {
+  margin-left: 20px;
+  background-color: var(--pink);
+}
+
+.fellow-control-frame :deep(.el-button:hover), #confirm-button-frame :deep(.el-button--danger:hover) {
+  background-color: var(--light-pink);
+}
+
+.fellow-control-frame :deep(.el-button:active), #confirm-button-frame :deep(.el-button--danger:active) {
+  background-color: #d04e77;
+}
+
+.fellow-control-frame :deep(.el-button[disabled]), #confirm-button-frame :deep(.el-button--danger[disabled]) {
+  background-color: var(--light-pink);
+}
+
+#confirm-button-frame :deep(.el-button--primary) {
+  border-color: unset;
+  background-color: var(--blue);
+  /*font-weight: bold;*/
+}
+
+#confirm-button-frame :deep(.el-button--primary:hover) {
+  background-color: var(--light-blue);
+}
+
+#confirm-button-frame :deep(.el-button--primary:active) {
+  background-color: #3594c5;
+}
+
+#confirm-button-frame :deep(.el-button--primary[disabled]) {
+  background-color: var(--light-blue);
 }
 
 </style>

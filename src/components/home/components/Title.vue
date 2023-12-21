@@ -21,7 +21,7 @@ export default {
   z-index: 1;
   width: 100%;
   height: 80px;
-  background-image: linear-gradient(to right, rgb(225, 94, 145) 20%, rgb(115, 204, 255) 70%);
+  background-image: linear-gradient(to right, var(--pink) 0%, var(--blue) 100%);
   padding: 0 200px;
   box-sizing: border-box;
 }

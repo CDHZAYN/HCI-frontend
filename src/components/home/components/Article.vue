@@ -133,7 +133,7 @@ export default {
 }
 
 #ver-division-line {
-  background-image: linear-gradient(to bottom, rgb(225, 94, 145) 20%, rgb(115, 204, 255) 80%);
+  background-image: linear-gradient(to bottom, var(--pink) 20%, var(--blue) 80%);
   width: 1px;
   margin: 0 10px;
   /*height: 300px;*/
@@ -177,7 +177,7 @@ export default {
 }
 
 #event-article-frame .event-article-item .event-article-item-text .book-event {
-  color: rgb(115, 204, 255);
+  color: var(--blue);
 }
 
 #event-article-frame .event-article-item h4 {
@@ -212,7 +212,7 @@ export default {
 #hr-division-line {
   margin: 10px 0;
   height: 1px;
-  background-image: -webkit-linear-gradient(bottom left, rgb(225, 94, 145) 30%, rgb(115, 204, 255) 50%);;
+  background-image: -webkit-linear-gradient(bottom left, var(--pink) 20%, var(--blue) 80%);
 }
 
 #poison-article-frame {

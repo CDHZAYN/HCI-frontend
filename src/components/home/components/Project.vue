@@ -76,7 +76,7 @@ export default {
   height: 180px;
   margin: 10px;
   background-color: white;
-  box-shadow: -2px 2px 3px rgb(225, 94, 145), 2px -2px 3px rgb(115, 204, 255);
+  box-shadow: -2px 2px 3px var(--pink), 2px -2px 3px var(--blue);
   display: flex;
   justify-content: space-evenly;
   align-items: center;

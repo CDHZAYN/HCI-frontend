@@ -152,8 +152,8 @@ export default {
 }
 
 .division-line {
-  background-image: linear-gradient(to bottom, rgb(225, 94, 145) 20%, rgb(115, 204, 255) 80%);
-  width: 5px; /*设置宽高*/
+  background-image: linear-gradient(to bottom, var(--pink) 20%, var(--blue) 80%);
+  width: 4px; /*设置宽高*/
   height: 300px;
 }
 
@@ -219,7 +219,7 @@ export default {
 
 .counselor-item-border-show {
   background-color: white;
-  box-shadow: -2px 2px 3px rgb(225, 94, 145), 2px -2px 3px rgb(115, 204, 255);
+  box-shadow: -2px 2px 3px var(--pink), 2px -2px 3px var(--blue);
 }
 
 .item-hover-not-show {

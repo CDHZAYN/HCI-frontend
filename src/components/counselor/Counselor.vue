@@ -20,8 +20,8 @@
     </div>
   </div>
   <Transition appear>
-    <div class="counselor-hover" v-show="hoverDisplay"
-         :style="{'transform': `translate(${hoverX}px, ${hoverY - 100}px)`}">
+    <div class="counselor-hover" v-show="hoverDisplay" @mouseleave="console.log('leave');mouseLeaveItem()"
+         :style="{'transform': `translate(${hoverX}px, ${hoverY - 100}px)`}" :key="showingCounselor.name">
       <div id="counselor-hover-title">
         <h1>{{ showingCounselor.name }}</h1>
         <h2>{{ showingCounselor.rank }}</h2>
@@ -44,8 +44,7 @@
     <div class="counselor-entry-frame">
       <div v-for="(item, index2) in counselorList.slice(index1 * 4, index1 * 4 + 4)"
            class="counselor-item" :ref="'counselor' + (index1 * 4 + index2)">
-        <img :src="getImg(item.img)" @mouseenter="mouseEnterItem(index1, index2)"
-             @mouseleave="mouseLeaveItem(index1, index2)"/>
+        <img :src="getImg(item.img)" @mouseenter="mouseEnterItem(index1, index2)"/>
       </div>
     </div>
   </div>
@@ -136,6 +135,7 @@ export default {
       hoverX: 0,
       hoverY: 0,
       hoverDisplay: false,
+      isHover: false,
     }
   },
   methods: {
@@ -143,7 +143,7 @@ export default {
       return getAssetsFile(name)
     },
     mouseEnterItem(index1, index2) {
-      this.hoverDisplay = false
+      this.isHover = true
       const index = index1 * 4 + index2
       setTimeout(() => {
         this.showingCounselor = this.counselorList[index1 * 4 + index2]
@@ -152,12 +152,16 @@ export default {
         this.hoverY = this.$refs['counselor' + index][0].getBoundingClientRect().top
             - this.$refs['counselor' + 0][0].getBoundingClientRect().top
         this.hoverDisplay = true
-
-        console.log(this.hoverX)
       }, 100)
 
     },
-    mouseLeaveItem(index1, index2) {
+    mouseLeaveItem() {
+      this.isHover = false
+      setTimeout(() => {
+        console.log(this.isHover)
+        if(!this.isHover)
+          this.hoverDisplay = false
+      }, 1000)
     }
   },
   mounted() {// 观察底部
@@ -219,14 +223,19 @@ export default {
   margin-right: 30px;
 }
 
+#head-search-frame :deep(.el-slider__bar){
+  background-color: var(--blue);
+}
+
 .counselor-hover {
   width: 300px;
   /*height: 500px;*/
   position: absolute;
   z-index: 1;
   background-color: white;
-  box-shadow: -2px 2px 3px rgb(225, 94, 145), 2px -2px 3px rgb(115, 204, 255);
+  box-shadow: -2px 2px 3px var(--pink), 2px -2px 3px var(--blue);
   text-align: center;
+  /*transition: opacity 0.2s ease-in-out;*/
 }
 
 .counselor-hover img {
@@ -241,7 +250,6 @@ export default {
   height: 100px;
   box-sizing: border-box;
   text-align: center;
-  transition: opacity 0.2s linear;
 }
 
 #counselor-hover-title h1 {
@@ -258,7 +266,6 @@ export default {
 #counselor-hover-field {
   padding: 10px 15px 20px 15px;
   /*height: 150px;*/
-  transition: opacity 0.2s linear;
   overflow-y: hidden;
   text-align: left;
 }
