@@ -111,7 +111,7 @@ export default {
       return callback()
     },
     passwordValidator(rule, value, callback) {
-      if (!value.match(/^(?=.*[a-zA-Z])(?=.*\d)$/))
+      if (!value.match(/^(?=.*[a-zA-Z])(?=.*\d).+$/))
         return callback(new Error('密码应且只应同时包含英文字符和数字'))
       if (this.mode === 'register')
         return this.$refs.registerFormRef.validateField('confirmPassword', () => null)

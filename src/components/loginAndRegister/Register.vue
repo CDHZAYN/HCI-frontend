@@ -35,7 +35,7 @@
       </el-form>
       <el-button @click="register()" id="button" type="primary">注&nbsp;&nbsp;册</el-button>
       <div id="link-frame">
-        <a href="/register">登录</a>
+        <a href="/login">登录</a>
         <p>&nbsp;|&nbsp;登录或注册即表示同意</p>
         <a href="/contract">用户条款</a>
       </div>
@@ -144,7 +144,7 @@ export default {
       return callback()
     },
     passwordValidator(rule, value, callback) {
-      if (!value.match(/^(?=.*[a-zA-Z])(?=.*\d)$/))
+      if (!value.match(/^(?=.*[a-zA-Z])(?=.*\d).+$/))
         return callback(new Error('密码应且只应同时包含英文字符和数字'))
       return this.$refs.registerFormRef.validateField('confirmPassword', () => null)
     },
