@@ -7,13 +7,17 @@
         <img id="dec3" :src="getImg('粉圆.png')">
         <img id="dec4" :src="getImg('粉圆.png')">
       </div>
-      <div id="banner-text">
-        <h1>生命是<br>一个体验的过程，<br>你并不孤单。</h1>
-        <h2>——泽恩资深咨询师 陈铿</h2>
-      </div>
-      <div id="avatar-frame">
-        <img id="avatar" :src="getImg('counselor1.png')" alt="counselor"/>
-      </div>
+      <Transition mode="out-in" name="text">
+        <div id="banner-text" :key="list[showingIndex].title">
+          <h1 v-html="list[showingIndex].title"></h1>
+          <h2>——{{ list[showingIndex].subtitle }}</h2>
+        </div>
+      </Transition>
+      <Transition mode="out-in" name="avatar">
+        <div id="avatar-frame" :key="list[showingIndex].title">
+          <img id="avatar" :src="getImg(list[showingIndex].avatar)" alt="counselor"/>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -23,15 +27,35 @@ import getAssetsFile from "../../../assets/getAssetsFile.js";
 
 export default {
   name: "Banner",
-  data(){
-    return{
-
+  data() {
+    return {
+      showingIndex: 0,
+      list: [
+        {
+          title: '遇到悲伤，<br>可以信赖一个人，<br>信赖当下的环境。',
+          subtitle: '泽恩资深咨询师 程冰',
+          avatar: 'counselor4.png'
+        }, {
+          title: '生命是<br>一个体验的过程，<br>你并不孤单。',
+          subtitle: '泽恩资深咨询师 陈铿',
+          avatar: 'counselor1.png'
+        }, {
+          title: '无论经历什么困难，<br>我会一直在这里<br>陪伴着你。',
+          subtitle: '泽恩资深咨询师 李诗淼',
+          avatar: 'counselor3.png'
+        }
+      ]
     }
   },
   methods: {
     getImg(name) {
       return getAssetsFile(name)
     }
+  },
+  mounted() {
+    setInterval(() => {
+      this.showingIndex = (this.showingIndex + 1) % this.list.length
+    }, 4000)
   }
 }
 </script>
@@ -46,6 +70,30 @@ export default {
   overflow: hidden;
   /*display: flex;*/
   /*justify-content: space-around;*/
+}
+
+.text-enter-active {
+  transition: transform 0.7s ease-in-out, opacity 0.7s linear;
+}
+
+.text-leave-active {
+  transition: transform 0.3s ease-in-out, opacity 0.3s linear;
+}
+
+.text-enter-from,
+.text-leave-to {
+  transform: translateX(-30%);
+  opacity: 0;
+}
+
+.avatar-enter-active,
+.avatar-leave-active {
+  transition: transform 0.3s ease-in-out, opacity 0.3s linear;
+}
+
+.avatar-enter-from,
+.avatar-leave-to {
+  opacity: 0;
 }
 
 @keyframes move1 {
@@ -74,11 +122,13 @@ export default {
   }
   33% {
     transform: translate(5%, 20%);
-    opacity: 60;
+    scale: .8;
+    opacity: 40;
   }
   66% {
     transform: translate(20%, -10%);
     opacity: 80;
+    scale: .5;
   }
   100% {
     transform: translate(0, 0);

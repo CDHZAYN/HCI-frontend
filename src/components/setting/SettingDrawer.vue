@@ -8,7 +8,7 @@
         <div id="title-frame">
           <p>欢迎，</p>
           <div id="name-frame">
-            <h1>我是傻逼我是傻逼我是傻逼我是傻逼</h1>
+            <h1>{{ userInfo.username }}</h1>
           </div>
           <div id="hr-division-line"/>
         </div>
@@ -43,10 +43,10 @@
       <div @click.stop>
         <Transition name="level2" mode="out-in">
           <div class="level2" v-if="level2Type === '1'">
-            <Account></Account>
+            <Account :userInfo="userInfo"></Account>
           </div>
           <div class="level2" v-else-if="level2Type === '2'">
-            <Fellow></Fellow>
+            <Fellow :userInfo="userInfo"></Fellow>
           </div>
           <div class="level2" v-else-if="level2Type === '3'">
             <BookHistory></BookHistory>
@@ -69,6 +69,7 @@ export default {
   components: {Close, Setting, Connection, Bell, Remove, Account, Fellow, BookHistory},
   props: {
     level1Open: Boolean,
+    userInfo: Object
   },
   data() {
     return {

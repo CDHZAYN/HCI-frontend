@@ -103,12 +103,10 @@ export default {
     usernameOrEmailValidator(rule, value, callback) {
       if (value.includes('@'))
         return this.emailValidator(rule, value, callback)
-      if (value.length >= 16 || value.length <= 1)
-        return this.usernameValidator(rule, value, callback)
-      return callback()
+      return this.usernameValidator(rule, value, callback)
     },
     usernameValidator(rule, value, callback) {
-      if (value.length >= 16 || value.length <= 1)
+      if (value.length >= 17 || value.length <= 1)
         return callback(new Error('用户名长度应在2-16位之间'))
       if (value.includes('@'))
         return callback(new Error('用户名中不应包含’@‘字符'))
@@ -117,8 +115,6 @@ export default {
     passwordValidator(rule, value, callback) {
       if (!value.match(/^(?=.*[a-zA-Z])(?=.*\d).+$/))
         return callback(new Error('密码应且只应同时包含英文字符和数字'))
-      if (this.mode === 'register')
-        return this.$refs.registerFormRef.validateField('confirmPassword', () => null)
       return callback()
     },
     emailValidator(rule, value, callback) {

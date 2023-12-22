@@ -3,15 +3,15 @@
   <h2>基本信息</h2>
   <div>
     <h4>账号ID</h4>
-    <p>safd</p>
+    <p>{{ userInfo.userId }}</p>
   </div>
   <div>
     <h4>用户名</h4>
-    <p>safd</p>
+    <p>{{ userInfo.username }}</p>
   </div>
   <div>
     <h4>邮箱</h4>
-    <p>949135640@qq.com</p>
+    <p>{{ userInfo.email }}</p>
   </div>
   <div id="hr-division-line"/>
   <h2 style="margin: 40px 0;">密码重置</h2>
@@ -26,11 +26,9 @@
     <el-form-item label="重复新密码" prop="confirmNewPwd">
       <el-input v-model="password.confirmNewPwd" show-password/>
     </el-form-item>
-    <el-form-item>
-      <div id="button-frame">
-      <el-button type="primary" @click="submit">确认</el-button>
-      </div>
-    </el-form-item>
+    <div id="button-frame">
+      <el-button type="primary" @click="submit()">确认</el-button>
+    </div>
   </el-form>
 </template>
 
@@ -41,6 +39,9 @@ import {ElMessage} from "element-plus";
 
 export default {
   name: "Account",
+  props: {
+    userInfo: Object
+  },
   data() {
     return {
       password: {
@@ -58,7 +59,7 @@ export default {
         newPwd: [
           {required: true, message: '输入不能为空', trigger: 'blur'},
           {min: 8, max: 16, message: '密码长度应在8-16位之间', trigger: 'blur'},
-          {validator: this.passwordValidator, trigger: 'blur'},
+          {validator: this.newPasswordValidator, trigger: 'blur'},
         ],
         confirmNewPwd: [
           {required: true, message: '输入不能为空', trigger: 'blur'},
@@ -68,26 +69,41 @@ export default {
       }
     }
   },
-  methods:{
-    async submit(){
-      await this.$refs.passwordRef.validate((valid, invalidFields) => {
+  methods: {
+    getSCryptPwd(pwd){
+      let testList = []
+      for (let i = 0; i < pwd.length; ++i) {
+        let str = pwd.charCodeAt(i)
+        testList[i] = str
+      }
+      let passwordScrypt = syncScrypt(testList,
+          new buffer.SlowBuffer("105gjc".normalize('NFKC')), 1024, 8, 1, 64)
+      let passwordScryptStr = ''
+      for (let i = 0; i < passwordScrypt.length; ++i)
+        passwordScryptStr += String.fromCharCode(passwordScrypt[i])
+      return passwordScryptStr
+    },
+    submit() {
+      console.log('???')
+      this.$refs.passwordRef.validate((valid, invalidFields) => {
+        console.log('???????')
         if (valid) {
-          let testList = []
-          for (let i = 0; i < this.password.newPwd.length; ++i) {
-            let str = this.password.newPwd.charCodeAt(i)
-            testList[i] = str
+
+          const passwordInfo = {
+            userId: this.userInfo.userId,
+            originalPwd: this.getSCryptPwd(this.password.originalPwd),
+            newPwd: this.getSCryptPwd(this.password.newPwd)
           }
-          let passwordScrypt = syncScrypt(testList,
-              new buffer.SlowBuffer("105gjc".normalize('NFKC')), 1024, 8, 1, 64)
-          let passwordScryptStr = ''
-          for (let i = 0; i < passwordScrypt.length; ++i)
-            passwordScryptStr += String.fromCharCode(passwordScrypt[i])
-          // this.$request.post('/user/register', registerInfo).then(() => {
-          //   ElMessage.success('Register success!')
-          //   this.changeMode()
-          // }).catch((response) => {
-          //   ElMessage.error('Register Failed!\n' + response.msg)
-          // })
+          this.$request.post('/user/changePwd', passwordInfo).then(() => {
+            ElMessage.success('密码重置成功！')
+            this.password = {
+              originalPwd: '',
+              newPwd: '',
+              confirmNewPwd: ''
+            }
+          }).catch((response) => {
+            ElMessage.error('密码重置失败：' + response.msg)
+          })
         } else {
           console.log(invalidFields)
         }
@@ -96,9 +112,15 @@ export default {
     passwordValidator(rule, value, callback) {
       if (!value.match(/^(?=.*[a-zA-Z])(?=.*\d).+$/))
         return callback(new Error('密码应且只应同时包含英文字符和数字'))
-      if (this.mode === 'register')
-        return this.$refs.registerFormRef.validateField('confirmPassword', () => null)
       return callback()
+    },
+    newPasswordValidator(rule, value, callback) {
+      if (!value.match(/^(?=.*[a-zA-Z])(?=.*\d).+$/))
+        return callback(new Error('密码应且只应同时包含英文字符和数字'))
+      if (this.password.originalPwd === this.password.newPwd) {
+        return callback(new Error('新旧密码相同'))
+      }
+      return this.$refs.passwordRef.validateField('confirmNewPwd', () => null)
     },
     confirmPasswordValidator(rule, value, callback) {
       if (value !== this.password.newPwd)
@@ -116,7 +138,7 @@ h4, p {
   margin: 15px 0;
 }
 
-h4{
+h4 {
   width: 100px;
 }
 
@@ -126,12 +148,12 @@ h4{
   background-image: -webkit-linear-gradient(bottom left, var(--pink) 30%, var(--blue) 70%);
 }
 
-:deep(label){
+:deep(label) {
   justify-content: left;
   width: 100px;
 }
 
-:deep(.el-input){
+:deep(.el-input) {
   width: 300px;
 }
 

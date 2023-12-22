@@ -135,6 +135,20 @@ export default {
   },
   mounted() {
     this.timer = setInterval(() => ++this.timeCnt, 50)
+    this.counselorList = []
+    this.$request.post('/counselor/list', {
+      counselorName: null,
+      rank: 3,
+      priceLowerBound: null,
+      priceUpperBound: null,
+      fieldLabel: null,
+      location: null,
+      sex: null,
+      form: null,
+      skip: null,
+    }).then((res)=>{
+      this.counselorList.push(...res.msg, ...res.msg)
+    })
   }
 }
 </script>

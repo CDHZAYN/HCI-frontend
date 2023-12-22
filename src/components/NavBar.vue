@@ -19,7 +19,8 @@
       <a href="/login" v-else>登录/注册</a>
     </div>
   </div>
-  <SettingDrawer :level1Open="isSettingOpen" @close-setting="isSettingOpen = false" @unlogin="unlogin"></SettingDrawer>
+  <SettingDrawer :level1Open="isSettingOpen" @close-setting="isSettingOpen = false" @unlogin="unlogin"
+  :userInfo="userInfo"></SettingDrawer>
 </template>
 
 <script>
@@ -89,9 +90,6 @@ export default {
       this.$request.get('/user/getAccount', {params: {userId}}).then((res) => {
         console.log('relogin')
         this.userInfo = res.msg
-
-        this.userInfo.userId = this.userInfo.id
-        this.userInfo.id = undefined
 
         this.hasLogin = true
       }).catch((err) => {

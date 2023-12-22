@@ -113,8 +113,8 @@ export default {
         }
       })
     },
-    async register() {
-      await this.$refs.registerFormRef.validate((valid, invalidFields) => {
+    register() {
+      this.$refs.registerFormRef.validate((valid, invalidFields) => {
         if (valid) {
           let testList = []
           for (let i = 0; i < this.registerForm.password.length; ++i) {
@@ -145,8 +145,6 @@ export default {
       })
     },
     usernameValidator(rule, value, callback) {
-      if (value.length > 16 || value.length < 5)
-        return callback(new Error('用户名长度应在5-16位之间'))
       if (value.includes('@'))
         return callback(new Error('用户名中不应包含’@‘字符'))
       return callback()
@@ -167,7 +165,6 @@ export default {
       return callback()
     },
     verifyCodeValidator(rule, value, callback) {
-      console.log(this.registerForm.verifyCode, this.correctVerifyCode)
       if (this.registerForm.verifyCode !== this.correctVerifyCode)
         return callback(new Error('验证码不匹配'))
       return callback()
