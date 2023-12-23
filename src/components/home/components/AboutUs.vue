@@ -42,15 +42,15 @@
          :style="{'transform': `translate(-${(timeCnt) % (320 * counselorList.length / 2 - 50)}px, 5px)`}">
       <div :class="{ 'item-hover-not-show': !isShow[index], 'counselor-item-title': true}">
         <h1>{{ item.name }}</h1>
-        <h2>{{ item.rank }}</h2>
+        <h2>{{ positionMap[item.position] }}</h2>
       </div>
       <a href="/counselor/0">
         <div class="img-frame">
-          <img :src="getImg(item.img)" @mouseenter="mouseEnterItem(index)" @mouseleave="mouseLeaveItem(index)"/>
+          <img :src="getImg('counselor' + (index % 4 + 1) + '.png')" @mouseenter="mouseEnterItem(index)" @mouseleave="mouseLeaveItem(index)"/>
         </div>
       </a>
       <div :class="{'item-hover-not-show': !isShow[index], 'counselor-item-field':true}">
-        <p v-for="fieldItem in item.field">{{ fieldItem }}</p>
+        <p v-for="fieldItem in item.fieldLabel">{{ fieldItem }}</p>
       </div>
     </div>
   </div>
@@ -64,57 +64,8 @@ export default {
   name: "AboutUs",
   data() {
     return {
-      counselorList: [{
-        name: '陈铿',
-        rank: '资深级咨询师',
-        img: 'counselor1.png',
-        field: ['抑郁', '个人探索', '关系困扰', '情感问题']
-      }, {
-        name: '杨楠',
-        rank: '资深级咨询师',
-        img: 'counselor2.png',
-        field: ['抑郁', '焦虑', '亲密关系', '个人成长', '分析心理学', '自体心理学']
-      }, {
-        name: '马圆圆',
-        rank: '资深级咨询师',
-        img: 'counselor3.png',
-        field: ['婚姻恋爱问题', '双相情感障碍', '青少年问题']
-      }, {
-        name: '马圆圆',
-        rank: '资深级咨询师',
-        img: 'counselor3.png',
-        field: ['婚姻恋爱问题', '双相情感障碍', '青少年问题']
-      }, {
-        name: '马圆圆',
-        rank: '资深级咨询师',
-        img: 'counselor2.png',
-        field: ['婚姻恋爱问题', '双相情感障碍', '青少年问题']
-      }, {
-        name: '陈铿',
-        rank: '资深级咨询师',
-        img: 'counselor1.png',
-        field: ['抑郁', '个人探索', '关系困扰', '情感问题']
-      }, {
-        name: '杨楠',
-        rank: '资深级咨询师',
-        img: 'counselor2.png',
-        field: ['抑郁', '焦虑', '亲密关系', '个人成长', '分析心理学', '自体心理学']
-      }, {
-        name: '马圆圆',
-        rank: '资深级咨询师',
-        img: 'counselor3.png',
-        field: ['婚姻恋爱问题', '双相情感障碍', '青少年问题']
-      }, {
-        name: '马圆圆',
-        rank: '资深级咨询师',
-        img: 'counselor3.png',
-        field: ['婚姻恋爱问题', '双相情感障碍', '青少年问题']
-      }, {
-        name: '马圆圆',
-        rank: '资深级咨询师',
-        img: 'counselor2.png',
-        field: ['婚姻恋爱问题', '双相情感障碍', '青少年问题']
-      }],
+      counselorList: [],
+      positionMap: ['专业咨询师', '专家级咨询师', '资深级咨询师', '督导级咨询师'],
       isShow: [],
       timeCnt: 0,
       timer: null
@@ -137,15 +88,8 @@ export default {
     this.timer = setInterval(() => ++this.timeCnt, 50)
     this.counselorList = []
     this.$request.post('/counselor/list', {
-      counselorName: null,
-      rank: 3,
-      priceLowerBound: null,
-      priceUpperBound: null,
-      fieldLabel: null,
-      location: null,
-      sex: null,
-      form: null,
-      skip: null,
+      position: 3,
+      skip: 0,
     }).then((res)=>{
       this.counselorList.push(...res.msg, ...res.msg)
     })

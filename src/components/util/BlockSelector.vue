@@ -3,24 +3,25 @@
     <div id="list-select-block"
          :style="{width: `${blockWidth}px`,transform: `translate(${blockOffsetX}px, ${blockOffsetY - 4}px)`,
          'background-color': colorMap[color]}"></div>
-    <p v-for="(item, index) in list" :ref="'item'+index" @click="itemSelecting=index">{{ item }}</p>
+    <p v-for="(item, index) in list" :ref="'item'+index" @click="changeHover(index)">{{ item }}</p>
   </div>
 </template>
 
 <script>
 export default {
   name: "BlockSelector",
-  props:{
+  props: {
     list: Array,
+    type: String,
     color: String
   },
-  data(){
-    return{
+  data() {
+    return {
       itemSelecting: 0,
       blockOffsetX: 0,
       blockOffsetY: 0,
       blockWidth: 0,
-      colorMap:{
+      colorMap: {
         'blue': 'var(--light-blue)',
         'pink': 'var(--light-pink)',
       }
@@ -41,16 +42,32 @@ export default {
       }
     }
   },
+  methods: {
+    changeHover(index) {
+      this.isHover = true
+      this.itemSelecting = index
+      this.$emit('changeSelect', {
+        index,
+        type: this.type,
+        text: this.list[index]
+      })
+    }
+  },
   mounted() {
     this.$refs['item' + 0][0].style.color = 'white'
     this.blockWidth = this.$refs['item' + 0][0].clientWidth + 20
+    this.$emit('changeSelect', {
+      index: 0,
+      type: this.type,
+      text: this.list[0]
+    })
   }
 }
 </script>
 
 <style scoped>
 
-#list-frame{
+#list-frame {
   margin: 10px 0;
 }
 
