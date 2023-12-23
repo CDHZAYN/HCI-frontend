@@ -27,7 +27,9 @@
       <template #date-cell="{ data }">
         <div class="date-item" @click="selectDate(data)">
           <p :class="{'date-selecting' : data.isSelected,
-           'date-has-available': parseInt(data.day.split('-')[2]) % 3 === 0}">{{ data.day.split('-')[2] }}</p>
+           'date-not-available': availableDateList.indexOf(parseInt(data.day.split('-')[2])) === -1}">
+            {{ data.day.split('-')[2] }}
+          </p>
         </div>
       </template>
     </el-calendar>
@@ -50,7 +52,6 @@
                @click="$emit('nextTo', 2, {})">确认选择
     </el-button>
   </div>
-  {{ counselorIdList }}
 </template>
 
 <script>
@@ -77,6 +78,8 @@ export default {
       position: ['全部职位', '专业咨询师', '专家级咨询师', '资深级咨询师', '督导级咨询师'],
       dateInfo: {},
       isListLoading: false,
+
+      availableDateList: [],
 
       conditionForm: {},
       queueingId: 0,
@@ -234,8 +237,16 @@ export default {
     },
   },
   mounted() {
-      if(type === 2){
-
+      if(this.type === 2){
+        this.$request.get('/eventBook/date').then((res)=>{
+          this.availableDateList = res.msg
+        })
+      } else{
+        for(let i = 0; i < 14; ++i){
+          let date = new Date()
+          date.setDate(date.getDate() + i)
+          this.availableDateList.push(date.getDate())
+        }
       }
   }
 }
@@ -298,7 +309,7 @@ export default {
   font-weight: bold;
 }
 
-.date-item .date-has-available {
+.date-item .date-not-available {
   color: #ebeef5;
 }
 
