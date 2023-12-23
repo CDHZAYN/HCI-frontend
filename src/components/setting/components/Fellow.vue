@@ -86,6 +86,7 @@ export default {
   },
   computed: {
     age() {
+      console.log(this.detail.birth)
       if (!this.detail.birth) {
         return '保密'
       }
@@ -109,8 +110,9 @@ export default {
       this.detail.note = ''
     },
     isFellowEqual(fellow1, fellow2) {
+      console.log(fellow1, fellow2)
       return fellow1.nickname === fellow2.nickname && fellow1.email === fellow2.email && fellow1.sex === fellow2.sex
-          && fellow1.birth === fellow2.birth && fellow1.age === fellow2.age && fellow1.vocation === fellow2.vocation
+          && fellow1.birth.toString() === fellow2.birth.toString() && fellow1.age === fellow2.age && fellow1.vocation === fellow2.vocation
           && fellow1.note === fellow2.note
     },
     requestDetail(index) {
@@ -129,8 +131,10 @@ export default {
           detail.fellowId = detail.id
           detail.birth = new Date(detail.birthYear, detail.birthMonth, 1)
           detail.sex = Number.parseInt(detail.sex)
-          this.detailTemp = detail
-          this.detail = detail
+          this.detailTemp = JSON.parse (JSON.stringify (detail))
+          this.detailTemp.birth = new Date(this.detailTemp.birth)
+          this.detail = JSON.parse (JSON.stringify (detail))
+          this.detail.birth = new Date(this.detail.birth)
           this.fellowList[index].nickname = this.detail.nickname
           this.isLoading = false
         }).catch((err) => {
@@ -154,7 +158,7 @@ export default {
             {
               confirmButtonText: '确认',
               cancelButtonText: '取消',
-              type: 'warning',
+              typeList: 'warning',
             }
         ).then(() => {
           if (!this.detail.fellowId) {
@@ -174,11 +178,15 @@ export default {
     submitDetail() {
       this.$refs.detailRef.validate((valid, invalidFields) => {
         if (valid) {
-          let birthYear = this.detail.birth.getFullYear()
-          let birthMonth = this.detail.birth.getMonth() + 1
-          if (this.detail > Date.now()) {
-            birthYear = undefined
-            birthMonth = undefined
+          let birthYear = undefined
+          let birthMonth = undefined
+          if(this.detail.birth){
+            let birthYear = this.detail.birth.getFullYear()
+            let birthMonth = this.detail.birth.getMonth() + 1
+            if (this.detail > Date.now()) {
+              birthYear = undefined
+              birthMonth = undefined
+            }
           }
           this.$request.post('/fellow/add', {
             ...this.detail,
@@ -190,8 +198,8 @@ export default {
             fellowId: undefined
           }).then((res) => {
             ElMessage.success('添加成功')
-            this.fellowList[this.selectingFellowIndex].fellowId = res.msg
-            this.detail.fellowId = res.msg
+            this.fellowList[this.selectingFellowIndex].fellowId = res.msg.id
+            this.detail.fellowId = res.msg.id
             this.detailTemp = this.detail
             this.selectFellow(this.selectingFellowIndex)
           }).catch((response) => {
@@ -215,7 +223,7 @@ export default {
           {
             confirmButtonText: '确认',
             cancelButtonText: '取消',
-            type: 'warning',
+            typeList: 'warning',
           }
       ).then(() => {
         if (!this.detail.fellowId) {

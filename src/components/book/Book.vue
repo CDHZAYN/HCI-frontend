@@ -31,7 +31,7 @@
         <BookCounselor :type="bookType" @next-to="nextTo"></BookCounselor>
       </div>
       <div v-else-if="active === 2">
-        <BookInfo @next-to="nextTo"></BookInfo>
+        <BookInfo :info="info" @next-to="nextTo"></BookInfo>
       </div>
       <div v-else-if="active === 3">
         <BookSuccess @next-to="nextTo"></BookSuccess>
@@ -47,6 +47,7 @@ import BookInfo from "./components/BookInfo.vue";
 import BookType from "./components/BookType.vue";
 import BookCounselor from "./components/BookCounselor.vue";
 import BookSuccess from "./components/BookSuccess.vue";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "Book",
@@ -59,6 +60,8 @@ export default {
         false: 'default'
       },
       bookType: 0,
+      info: {},
+      unLogin: false,
     }
   },
   methods: {
@@ -69,14 +72,24 @@ export default {
         this.active = step
     },
     nextTo(step, info) {
+      if(this.unLogin)
+        return
       if (step === 1) {
         this.bookType = info.index
       } else if (step === 2) {
-
+        this.info = info
       } else if (step === 3) {
 
       }
       this.active = step
+    }
+  },
+  mounted() {
+    const userId = localStorage.getItem('userId')
+    console.log(userId)
+    if (!userId || userId === 'undefined') {
+      this.unLogin = true
+      ElMessage.warning('请您登陆后再进行预约。')
     }
   }
 }

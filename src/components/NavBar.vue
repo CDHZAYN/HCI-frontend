@@ -39,7 +39,7 @@ export default {
   },
   data() {
     return {
-      hasLogin: true,
+      hasLogin: false,
       userInfo: {
         userId: '',
         username: 'dsfds',
@@ -81,19 +81,14 @@ export default {
     }
   },
   mounted() {
-    // console.log('get userId from local storage: ', localStorage.getItem('userId'))
     const userId = localStorage.getItem('userId')
-    // console.log(userId === true)
 
     if (userId && userId !== 'undefined') {
-      // console.log('in', userId)
       this.$request.get('/user/getAccount', {params: {userId}}).then((res) => {
-        // console.log('relogin')
         this.userInfo = res.msg
 
         this.hasLogin = true
       }).catch((err) => {
-        // console.log(err)
         localStorage.setItem('userId', '')
         ElMessage.error('登录状态过期，请重新登录。')
       })

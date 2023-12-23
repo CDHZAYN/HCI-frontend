@@ -96,7 +96,7 @@ export default {
           {
             confirmButtonText: '确认',
             cancelButtonText: '取消',
-            type: 'warning',
+            typeList: 'warning',
           }
       ).then(() => {
         this.$emit('unlogin')

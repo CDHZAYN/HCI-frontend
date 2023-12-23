@@ -11,6 +11,7 @@
       </el-input>
       <span><b>费用区间</b></span>
       <el-slider v-model="range" range show-stops :step="100" :max="1600" @change="filterChange({type: 'range'})"/>
+      <p>{{ range[0] }}元 ~ {{ range[1] }}元</p>
     </div>
     <BlockSelector :list="field" :type="'field'" :color="'blue'"
                    @change-select="filterChange"></BlockSelector>
@@ -20,8 +21,8 @@
                    @change-select="filterChange"></BlockSelector>
     <BlockSelector :list="position" :type="'position'" :color="'pink'"
                    @change-select="filterChange"></BlockSelector>
+    <div id="hr-division-line"></div>
   </div>
-  <div id="hr-division-line"></div>
   <div id="calendar-frame">
     <el-calendar :range="[rangeStart, rangeEnd]">
       <template #date-cell="{ data }">
@@ -33,23 +34,30 @@
         </div>
       </template>
     </el-calendar>
-    <div id="book-list-frame" v-loading="isListLoading">
-      <div v-for="(item, index) in bookList"
+    <div id="book-list-frame" v-loading="isListLoading || !hasFirstFetch">
+      <div v-for="(item, index) in bookList" v-if="bookList.length"
            class="book-item-frame"
            @click="bookItemSelecting = index">
         <div :class="{'selecting-background': true, 'book-item-selecting': index === bookItemSelecting}"></div>
         <img :src="getImg('counselor1.png')">
-        <h2>{{ item.title }}</h2>
         <div class="info-item">
-          <h4>{{ item.time }}</h4>
-          <h4>{{ item.position }}</h4>
+          <h2>{{ item.name }}</h2>
+          <h4>{{ item.location }} |
+            {{ item.startTime.substring(item.startTime.indexOf(' '), item.startTime.lastIndexOf(':')) }} ~
+            {{ item.endTime.substring(item.endTime.indexOf(' '), item.endTime.lastIndexOf(':')) }}</h4>
         </div>
+        <div class="price-frame">
+          <h4>￥{{ item.price }}</h4>
+        </div>
+      </div>
+      <div v-else style="text-align: center">
+        <p style="font-size: 13px; color: grey">该日不如改日，请选择其他高亮日期~</p>
       </div>
     </div>
   </div>
   <div id="confirm-button-frame">
     <el-button type="primary" :disabled="bookItemSelecting === -1"
-               @click="$emit('nextTo', 2, {})">确认选择
+               @click="$emit('nextTo', 2, {type, ...bookList[bookItemSelecting]})">确认选择
     </el-button>
   </div>
 </template>
@@ -78,6 +86,7 @@ export default {
       position: ['全部职位', '专业咨询师', '专家级咨询师', '资深级咨询师', '督导级咨询师'],
       dateInfo: {},
       isListLoading: false,
+      hasFirstFetch: false,
 
       availableDateList: [],
 
@@ -86,33 +95,7 @@ export default {
       counselorIdList: [],
       counselTypeMap: ['单人咨询', '多人咨询', undefined],
 
-      bookList: [
-        {
-          title: '陈铿-单人咨询',
-          time: '20:00 - 21:00',
-          position: '静安咨询室'
-        }, {
-          title: '陈铿三-单人咨询',
-          time: '20:00 - 21:00',
-          position: '静安咨询室'
-        }, {
-          title: '陈铿四-单人咨询',
-          time: '20:00 - 21:00',
-          position: '静安咨询室'
-        }, {
-          title: '陈铿-单人咨询',
-          time: '20:00 - 21:00',
-          position: '静安咨询室'
-        }, {
-          title: '陈铿-单人咨询',
-          time: '20:00 - 21:00',
-          position: '静安咨询室'
-        }, {
-          title: '陈铿-单人咨询',
-          time: '20:00 - 21:00',
-          position: '静安咨询室'
-        },
-      ],
+      bookList: [],
       bookItemSelecting: -1
     }
   },
@@ -143,9 +126,13 @@ export default {
     },
     selectDate(data) {
       this.dateInfo = data
-      this.bookItemSelecting = -1
       this.bookList = []
-      this.fetchSearch()
+      this.bookItemSelecting = -1
+      if (this.type !== 2 && this.availableDateList.indexOf(parseInt(data.day.split('-')[2])) !== -1)
+        this.fetchCounselorBook()
+      if (this.type === 2) {
+        this.fetchEventBook()
+      }
     },
     getSearchCondition() {
 
@@ -176,9 +163,9 @@ export default {
         skip: this.skip
       }
     },
-    fetchSearch() {
+    fetchCounselorBook() {
       this.isListLoading = true
-      if(!this.skip)
+      if (!this.skip)
         this.counselorIdList = []
       this.$request.post('/counselor/list', {
         ...this.getSearchCondition()
@@ -186,11 +173,11 @@ export default {
         res.msg.forEach((e) => {
           this.counselorIdList.push(e.id)
         })
-        if (res.msg.length < 8) {
+        if (res.msg.length < 8 && this.counselorIdList.length !== 0) {
           return Promise.reject()
         } else {
           this.skip++
-          this.fetchSearch()
+          this.fetchCounselorBook()
         }
       }).catch(() => {
         let date = undefined
@@ -213,7 +200,8 @@ export default {
           date
         }).then((res) => {
           this.bookList = res.msg
-        }).finally(()=>{
+        }).finally(() => {
+          this.hasFirstFetch = true
           this.skip = 0
           this.isListLoading = false
         })
@@ -231,28 +219,78 @@ export default {
           this.hasGetAll = false
           this.isHover = false
           this.counselorIdList = []
-          this.fetchSearch()
+          this.fetchCounselorBook()
         }
       }, 1000)
     },
+    fetchEventBook() {
+      this.isListLoading = true
+      let date = undefined
+      if (this.dateInfo && this.dateInfo.day) {
+        let dateStrSplit = this.dateInfo.day.split('-')
+        dateStrSplit[0] = Number.parseInt(dateStrSplit[0])
+        dateStrSplit[1] = Number.parseInt(dateStrSplit[1]) - 1
+        dateStrSplit[2] = Number.parseInt(dateStrSplit[2])
+        date = new Date(...dateStrSplit)
+        if (date.getTime() < Date.now()) {
+          date = new Date()
+        }
+      } else {
+        date = new Date()
+      }
+      date = this.dateToString(date)
+      this.$request.get('/eventBook/list', {
+        params: {
+          date
+        }
+      }).then((res) => {
+        this.bookList = res.msg
+      }).finally(() => {
+        this.hasFirstFetch = true
+        this.isListLoading = false
+      })
+    }
   },
   mounted() {
-      if(this.type === 2){
-        this.$request.get('/eventBook/date').then((res)=>{
-          this.availableDateList = res.msg
+    if (this.type === 2) {
+      this.fetchEventBook()
+      this.$request.get('/eventBook/date').then((res) => {
+        res.msg.forEach(e => {
+          this.availableDateList.push(parseInt(e.split('-')[2]))
         })
-      } else{
-        for(let i = 0; i < 14; ++i){
-          let date = new Date()
-          date.setDate(date.getDate() + i)
-          this.availableDateList.push(date.getDate())
-        }
+      })
+    } else {
+      for (let i = 0; i < 14; ++i) {
+        let date = new Date()
+        date.setDate(date.getDate() + i)
+        this.availableDateList.push(date.getDate())
       }
+    }
   }
 }
 </script>
 
 <style scoped>
+
+@keyframes scroll {
+  0% {
+    margin-left: 0;
+    transform: translateX(0);
+  }
+  10% {
+    margin-left: 0;
+    transform: translateX(0);
+  }
+  90% {
+    margin-left: 100%;
+    transform: translateX(-100%);
+  }
+  100% {
+    margin-left: 100%;
+    transform: translateX(-100%);
+  }
+}
+
 #head-search-frame {
   display: flex;
   align-items: center;
@@ -290,6 +328,15 @@ export default {
   justify-content: center;
 }
 
+#calendar-frame :deep(.is-today.is-selected) {
+  font-weight: bold;
+}
+
+#calendar-frame :deep(.is-today:not(.is-selected)) {
+  color: black;
+  font-weight: normal;
+}
+
 #calendar-frame :deep(.el-calendar) {
   width: 48%;
   /*height: 300px;*/
@@ -301,7 +348,6 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100%;
-  color: black;
 }
 
 .date-item .date-selecting {
@@ -379,28 +425,32 @@ export default {
   object-fit: cover;
 }
 
-#book-list-frame .book-item-frame h2 {
-  width: 250px;
-  margin: 0 50px;
-  display: inline-block;
-  line-height: 30px;
-  text-align: left;
-}
 
 #book-list-frame .book-item-frame .info-item {
-  height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  flex-direction: column;
-  width: 150px;
-  margin-right: 10px;
+  width: 200px;
+  margin-right: 30px;
+  overflow: hidden;
+}
+
+#book-list-frame .book-item-frame .info-item h2 {
+  min-width: 100%;
+  white-space: nowrap;
+  margin: 0;
+  animation: scroll ease-in-out 3s alternate infinite;
+  position: relative;
+  float: left;
 }
 
 #book-list-frame .book-item-frame .info-item h4 {
+  color: grey;
   line-height: 30px;
   margin: 0;
   font-weight: normal;
+}
+
+#book-list-frame .book-item-frame .price-frame {
+  font-weight: normal;
+  margin-right: 30px;
 }
 
 #confirm-button-frame {
