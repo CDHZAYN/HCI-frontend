@@ -27,7 +27,7 @@ request.interceptors.request.use(
 // 拦截器
 request.interceptors.response.use(
     function (response) {
-        console.log('good', response)
+        // console.log('good', response)
         if(response.data.result && response.data.result.token){
             token =  response.data.token
         }
@@ -37,7 +37,7 @@ request.interceptors.response.use(
         })
     },
     function (error) {
-        console.log('bad', error)
+        // console.log('bad', error)
         // 超出 2xx 范围的状态码都会触发该函数。
         // 对响应错误做点什么
         return Promise.reject({

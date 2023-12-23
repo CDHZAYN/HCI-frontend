@@ -1,7 +1,8 @@
 <template>
   <div v-if="type <=1" style="margin-top: 30px">
     <div id="head-search-frame">
-      <el-input v-model="searchName" placeholder="搜索咨询师名称" maxlength="10">
+      <el-input v-model="searchName" placeholder="搜索咨询师名称" maxlength="10"
+                @blur="filterChange({type: 'searchName'})">
         <template #prefix>
           <el-icon>
             <Search></Search>
@@ -9,13 +10,16 @@
         </template>
       </el-input>
       <span><b>费用区间</b></span>
-      <el-slider v-model="range" range show-stops :step="100" :max="1000"/>
+      <el-slider v-model="range" range show-stops :step="100" :max="1600" @change="filterChange({type: 'range'})"/>
     </div>
-    <BlockSelector :list="field" :color="'blue'"></BlockSelector>
-    <BlockSelector :list="location" :color="'pink'"></BlockSelector>
-    <BlockSelector :list="sex" :color="'blue'"></BlockSelector>
-    <BlockSelector :list="rank" :color="'pink'"></BlockSelector>
-    <BlockSelector :list="counselType" :color="'blue'"></BlockSelector>
+    <BlockSelector :list="field" :type="'field'" :color="'blue'"
+                   @change-select="filterChange"></BlockSelector>
+    <BlockSelector :list="location" :type="'location'" :color="'pink'"
+                   @change-select="filterChange"></BlockSelector>
+    <BlockSelector :list="sex" :type="'sex'" :color="'blue'"
+                   @change-select="filterChange"></BlockSelector>
+    <BlockSelector :list="position" :type="'position'" :color="'pink'"
+                   @change-select="filterChange"></BlockSelector>
   </div>
   <div id="hr-division-line"></div>
   <div id="calendar-frame">
@@ -46,6 +50,7 @@
                @click="$emit('nextTo', 2, {})">确认选择
     </el-button>
   </div>
+  {{ counselorIdList }}
 </template>
 
 <script>
@@ -56,20 +61,28 @@ import getAssetsFile from "../../../assets/getAssetsFile.js";
 export default {
   name: "BookCounselor",
   components: {BlockSelector, Search},
+  emits: {
+    nextTo: null,
+  },
   props: {
     type: Number
   },
   data() {
     return {
       searchName: '',
-      range: [100, 900],
-      field: ['全部领域', '亲密关系', '婚姻恋爱', '双相情感障碍', '青春期', '学业适应', '情绪困扰', '人际关系', '创伤心理', '个人成长', '家庭危机', '中年危机', '多文化群体',
-        '焦虑强迫', '压力管理', '人本主义', '精神动力学', '亲子沟通', '游戏治疗'],
-      location: ['全部地点', '静安寺店', '陆家嘴店', '线上'],
+      range: [0, 1600],
+      field: ['全部领域', '亲密关系', '情绪困扰', '人际关系', '个人成长', '女性成长', '抑郁焦虑', '精神动力学', '亲子沟通'],
+      location: ['全部地点', '静安寺店', '陆家嘴店'],
       sex: ['全部性别', '男咨询师', '女咨询师'],
-      rank: ['全部职位', '专业咨询师', '专家级咨询师', '资深级咨询师', '督导级咨询师'],
-      counselType: ['全部形式', '个体咨询', '多人咨询', '团体活动', '企业EAP'],
+      position: ['全部职位', '专业咨询师', '专家级咨询师', '资深级咨询师', '督导级咨询师'],
+      dateInfo: {},
       isListLoading: false,
+
+      conditionForm: {},
+      queueingId: 0,
+      counselorIdList: [],
+      counselTypeMap: ['单人咨询', '多人咨询', undefined],
+
       bookList: [
         {
           title: '陈铿-单人咨询',
@@ -116,16 +129,114 @@ export default {
     getImg(name) {
       return getAssetsFile(name)
     },
+    dateToString(date) {
+      const Y = date.getFullYear() + '-';
+      const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+      const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' ';
+      const h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+      const m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+      const s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+      return Y + M + D + h + m + s;
+    },
     selectDate(data) {
+      this.dateInfo = data
       this.bookItemSelecting = -1
-      this.isListLoading = true
-      let bookListTemp = this.bookList
       this.bookList = []
+      this.fetchSearch()
+    },
+    getSearchCondition() {
+
+      let fieldLabel = this.conditionForm['field'].text
+      if (fieldLabel.indexOf('全部') !== -1) fieldLabel = undefined
+      let location = this.conditionForm['location'].text
+      if (location.indexOf('全部') !== -1) location = undefined
+
+      let sex = this.conditionForm['sex'].index
+      if (sex === 0)
+        sex = undefined
+      else
+        sex--
+      let position = this.conditionForm['position'].index
+      if (position === 0)
+        position = undefined
+      else
+        position--
+
+      return {
+        counselorName: this.searchName,
+        priceLowerBound: this.range[0] - 1,
+        priceUpperBound: this.range[1] + 1,
+        fieldLabel,
+        location,
+        sex,
+        position,
+        skip: this.skip
+      }
+    },
+    fetchSearch() {
+      this.isListLoading = true
+      if(!this.skip)
+        this.counselorIdList = []
+      this.$request.post('/counselor/list', {
+        ...this.getSearchCondition()
+      }).then((res) => {
+        res.msg.forEach((e) => {
+          this.counselorIdList.push(e.id)
+        })
+        if (res.msg.length < 8) {
+          return Promise.reject()
+        } else {
+          this.skip++
+          this.fetchSearch()
+        }
+      }).catch(() => {
+        let date = undefined
+        if (this.dateInfo && this.dateInfo.day) {
+          let dateStrSplit = this.dateInfo.day.split('-')
+          dateStrSplit[0] = Number.parseInt(dateStrSplit[0])
+          dateStrSplit[1] = Number.parseInt(dateStrSplit[1]) - 1
+          dateStrSplit[2] = Number.parseInt(dateStrSplit[2])
+          date = new Date(...dateStrSplit)
+          if (date.getTime() < Date.now()) {
+            date = new Date()
+          }
+        } else {
+          date = new Date()
+        }
+        date = this.dateToString(date)
+        this.$request.post('/counselorBook/list', {
+          counselorId: this.counselorIdList,
+          form: this.counselTypeMap[this.type],
+          date
+        }).then((res) => {
+          this.bookList = res.msg
+        }).finally(()=>{
+          this.skip = 0
+          this.isListLoading = false
+        })
+      })
+    },
+    filterChange(selectBlock) {
+
+      this.conditionForm[selectBlock.type] = selectBlock
+      this.queueingId++
+      const queueingIdFrozen = this.queueingId
+
       setTimeout(() => {
-        this.bookList = bookListTemp
-        this.isListLoading = false
+        if (this.queueingId === queueingIdFrozen) {
+          this.skip = 0
+          this.hasGetAll = false
+          this.isHover = false
+          this.counselorIdList = []
+          this.fetchSearch()
+        }
       }, 1000)
-    }
+    },
+  },
+  mounted() {
+      if(type === 2){
+
+      }
   }
 }
 </script>

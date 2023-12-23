@@ -58,7 +58,7 @@ export default {
         this.pageSelectBlockOffset = 30
         for (let i = 0; i < this.pageSelecting; ++i) {
           const width = this.$refs['page' + i][0].clientWidth
-          console.log(width)
+          // console.log(width)
           if (width !== 0)
             this.pageSelectBlockOffset += width + 40
         }
@@ -81,19 +81,19 @@ export default {
     }
   },
   mounted() {
-    console.log('get userId from local storage: ', localStorage.getItem('userId'))
+    // console.log('get userId from local storage: ', localStorage.getItem('userId'))
     const userId = localStorage.getItem('userId')
-    console.log(userId === true)
+    // console.log(userId === true)
 
     if (userId && userId !== 'undefined') {
-      console.log('in', userId)
+      // console.log('in', userId)
       this.$request.get('/user/getAccount', {params: {userId}}).then((res) => {
-        console.log('relogin')
+        // console.log('relogin')
         this.userInfo = res.msg
 
         this.hasLogin = true
       }).catch((err) => {
-        console.log(err)
+        // console.log(err)
         localStorage.setItem('userId', '')
         ElMessage.error('登录状态过期，请重新登录。')
       })
