@@ -87,6 +87,7 @@ export default {
       dateInfo: {},
       isListLoading: false,
       hasFirstFetch: false,
+      skip: 0,
 
       availableDateList: [],
 
@@ -273,7 +274,12 @@ export default {
   mounted() {
     if (this.type === 2) {
       this.fetchEventBookWrapper()
-      this.$request.get('/eventBook/date').then((res) => {
+      const userId = localStorage.getItem('userId')
+      this.$request.get('/eventBook/date', {
+        params:{
+          userId
+        }
+      }).then((res) => {
         res.msg.forEach(e => {
           this.availableDateList.push(parseInt(e.split('-')[2]))
         })

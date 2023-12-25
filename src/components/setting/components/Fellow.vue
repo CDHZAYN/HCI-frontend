@@ -234,7 +234,8 @@ export default {
         } else {
           this.$request.post('/fellow/delete', {},{
             params: {
-              fellowId: this.detail.fellowId
+              fellowId: this.detail.fellowId,
+              userId: this.userInfo.userId
             }
           }).then(() => {
             ElMessage({

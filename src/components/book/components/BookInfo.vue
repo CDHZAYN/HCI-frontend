@@ -133,7 +133,7 @@
     </div>
     <div class="price-item-frame">
       <h3>{{info.type === 2? '活动地点' : '咨询地点'}}</h3>
-      <p>{{ info.location }}</p>
+      <p>{{ inputList[0].input === 0 ? '线上' : info.location }}</p>
     </div>
     <div class="price-item-frame">
       <h3>{{info.type === 2? '活动时间' : '咨询时间'}}</h3>
@@ -306,7 +306,7 @@ export default {
         return
       } else if (this.info.type !== 2 &&
           (this.inputList[1].input === null || (this.inputList[1].input1 === 0 && this.inputList[1].input2 === null))) {
-        ElMessage.error('您暂未填写第二项必填项，请补充后重试。')
+        ElMessage.error('您暂未填写咨询者相关的必填项，请补充后重试。')
         return
       } else if (this.test === null) {
         ElMessage.error('您暂未选择支付方式，请补充后重试。')
