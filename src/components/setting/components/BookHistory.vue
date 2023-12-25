@@ -17,7 +17,7 @@
         </div>
       </template>
       <BookHistoryItem :bookInfo="bookList[showingBookIndex].book" :extraInfo="bookList[showingBookIndex].userBook"
-          :fellowList="bookList[showingBookIndex].userFellowId" :index="showingBookIndex" v-if="showingBookIndex >= 0"></BookHistoryItem>
+          :fellowListOld="bookList[showingBookIndex].userFellow" :index="showingBookIndex" v-if="showingBookIndex >= 0"></BookHistoryItem>
     </el-collapse-item>
   </el-collapse>
   <div id="bottom-frame">
@@ -106,10 +106,12 @@ export default {
         let bookListTemp = res.msg.bookRecord
         if (bookListTemp.length <= 10) {
           this.hasGetAll = true
+          if(bookListTemp.length === 0)
+            return
         }
         bookListTemp.forEach(e => {
           e.book.diff = this.getDiffFromNow(e.book.startTime)
-          e.book.totalPrice = e.book.price * e.userFellowId.length
+          e.book.totalPrice = e.book.price * e.userFellow.length
           let name = e.book.name
           if(name.indexOf('单人') !== -1)
             e.book.bookType = 0
@@ -124,10 +126,11 @@ export default {
             e.book.stateType = 2
           else
             e.book.stateType = 0
-          if(e.book.isOnline === 1){
+          if(e.book.isOnline === 1 || e.userBook.isOnline === 0){
             e.book.location = '线上'
           }
         })
+        console.log(bookListTemp[bookListTemp.length - 1])
         const startTime = bookListTemp[bookListTemp.length - 1].book.startTime
         this.earliestDateTime = dayjs(startTime, "YYYY-MM-DD HH:mm:ss")
         this.bookList.push(...bookListTemp)
@@ -154,7 +157,7 @@ export default {
           }
           this.fetchSearch()
         }
-      }, 200)
+      }, 1000)
     },
     searchFellowName(query) {
       this.candidateFellow = ['CDH', '大葛老师', '葛家辰', '大C老师'].filter((item) => {
@@ -174,13 +177,12 @@ export default {
     }
   },
   mounted() {
-
     this.earliestDateTime = new Date()
     this.earliestDateTime.setDate(this.earliestDateTime.getDate() + 14)
 
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && !this.hasGetAll) {
-        this.fetchSearch()
+        this.fetchSearchWrapper()
       } else {
         // console.log('left bottom')
       }
@@ -234,12 +236,6 @@ export default {
   /*font-weight: normal;*/
   font-size: 16px;
   /*margin-right: 30px;*/
-}
-
-#hr-division-line {
-  margin: 20px 0;
-  height: 1px;
-  background-image: -webkit-linear-gradient(bottom left, rgb(255, 94, 155) 30%, rgb(115, 204, 255) 50%);
 }
 
 :deep(.el-collapse-item__content .detail-item-frame) {

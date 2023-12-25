@@ -17,23 +17,25 @@
         <p>{{ item.note }}</p>
       </div>
     </div>
-    <!--        <div class="fellow-control-frame">-->
-    <!--                    <el-select multiple filterable reserve-keyword :filter-method="searchFellowName" v-model="fellowAdding"-->
-    <!--                               @blur="addFellow" placeholder="添加咨询者" value-key="nickname" @focus="fetchAllFellowList">-->
-    <!--                      <el-option-->
-    <!--                          v-for="(item, index) in candidateFellow"-->
-    <!--                          :key="item.nickname"-->
-    <!--                          :label="item.nickname"-->
-    <!--                          :value="item"-->
-    <!--                      >-->
-    <!--                        <span style="float: left">{{ item.nickname }}</span>-->
-    <!--                        <span style="float: right;color: var(&#45;&#45;el-text-color-secondary);font-size: 13px;">{{ item.note }}</span-->
-    <!--                        >-->
-    <!--                      </el-option>-->
-    <!--                    </el-select>-->
-    <!--                    <el-button type="danger" :disabled="fellowDeleting.length === 0" @click="deleteFellowFromList">删除选中咨询者-->
-    <!--                    </el-button>-->
-    <!--        </div>-->
+    <div class="fellow-control-frame" v-if="bookInfo.stateType === 0">
+      <el-select multiple filterable reserve-keyword :filter-method="searchFellowName" v-model="fellowAdding"
+                 @blur="addFellow" placeholder="添加咨询者" value-key="nickname">
+        <el-option
+            v-for="(item, index) in candidateFellow"
+            :key="item.nickname"
+            :label="item.nickname"
+            :value="item"
+        >
+          <span style="float: left">{{ item.nickname }}</span>
+          <span style="float: right;color: var(--el-text-color-secondary);font-size: 13px;">{{
+              item.note
+            }}</span
+          >
+        </el-option>
+      </el-select>
+      <el-button type="danger" :disabled="fellowDeleting.length === 0" @click="deleteFellowFromList">删除选中咨询者
+      </el-button>
+    </div>
   </div>
   <div style="height: 10px;"></div>
   <div id="hr-division-line"></div>
@@ -47,10 +49,10 @@
         <h3>{{ item.inputTitle }}</h3>
         <div v-if="item.inputType === 'input'">
           <el-input v-model="item.input" maxlength="256" show-word-limit type="textarea"
-                    :autosize="{ maxRows: 6 }"/>
+                    :autosize="{ maxRows: 6 }" :disabled="bookInfo.stateType !== 0"/>
         </div>
         <div v-else-if="item.inputType === 'select'">
-          <el-select v-model="item.input">
+          <el-select v-model="item.input" :disabled="bookInfo.stateType !== 0" placeholder=" ">
             <el-option
                 v-for="(sitem, index) in item.selectItem"
                 :key="sitem"
@@ -60,7 +62,7 @@
           </el-select>
         </div>
         <div v-else-if="item.inputType === 'selectAndInput'">
-          <el-select v-model="item.input1">
+          <el-select v-model="item.input1" :disabled="bookInfo.stateType !== 0" placeholder=" ">
             <el-option
                 v-for="(sitem, index) in item.selectItem"
                 :key="sitem"
@@ -69,10 +71,10 @@
             />
           </el-select>
           <el-input v-model="item.input2" maxlength="10" show-word-limit
-                    v-if="item.input1 === item.inputCondition"/>
+                    v-if="item.input1 === item.inputCondition" :disabled="bookInfo.stateType !== 0"/>
         </div>
         <div v-else-if="item.inputType === 'selectAndSelectAndInput'">
-          <el-select v-model="item.input1">
+          <el-select v-model="item.input1" :disabled="bookInfo.stateType !== 0" placeholder=" ">
             <el-option
                 v-for="(sitem, index) in item.selectItem1"
                 :key="sitem"
@@ -80,7 +82,8 @@
                 :value="index"
             />
           </el-select>
-          <el-select v-model="item.input2" v-if="item.input1 === item.select2Condition">
+          <el-select v-model="item.input2" v-if="item.input1 === item.select2Condition"
+                     :disabled="bookInfo.stateType !== 0" placeholder=" ">
             <el-option
                 v-for="(sitem, index) in item.selectItem2"
                 :key="sitem"
@@ -89,10 +92,10 @@
             />
           </el-select>
           <el-input v-model="item.input3" maxlength="10" show-word-limit
-                    v-if="item.input2 === item.inputCondition"/>
+                    v-if="item.input2 === item.inputCondition" :disabled="bookInfo.stateType !== 0"/>
         </div>
         <div v-else-if="item.inputType === 'multiSelect'">
-          <el-select v-model="item.input" multiple>
+          <el-select v-model="item.input" multiple :disabled="bookInfo.stateType !== 0" placeholder=" ">
             <el-option
                 v-for="(sitem, index) in item.selectItem"
                 :key="sitem"
@@ -109,57 +112,77 @@
     <h2 style="display: inline-block">
       支付信息
     </h2>
-    <!--        <div class="price-item-frame">-->
-    <!--          <h3>{{ info.type === 2 ? '活动名称' : '咨询名称' }}</h3>-->
-    <!--          <p>{{ info.name }}</p>-->
-    <!--        </div>-->
-    <!--        <div class="price-item-frame" v-if="info.type === 2">-->
-    <!--          <h3>{{ '活动单价' }}</h3>-->
-    <!--          <p>{{ info.price }}.00 元/人</p>-->
-    <!--        </div>-->
-    <!--        <div class="price-item-frame">-->
-    <!--          <h3>{{ info.type === 2 ? '活动总价' : '咨询价格' }}</h3>-->
-    <!--          <p>{{ info.price * fellowList.length }}.00 元</p>-->
-    <!--        </div>-->
-    <!--        <div class="price-item-frame">-->
-    <!--          <h3>{{ info.type === 2 ? '活动地点' : '咨询地点' }}</h3>-->
-    <!--          <p>{{ info.location }}</p>-->
-    <!--        </div>-->
-    <!--        <div class="price-item-frame">-->
-    <!--          <h3>{{ info.type === 2 ? '活动时间' : '咨询时间' }}</h3>-->
-    <!--          <p>{{ info.startTime }} ~ {{ info.endTime }}</p>-->
-    <!--        </div>-->
     <div class="price-item-frame">
+      <h3>{{ bookInfo.bookType === 2 ? '活动名称' : '咨询名称' }}</h3>
+      <p>{{ bookInfo.name }}</p>
+    </div>
+    <div class="price-item-frame" v-if="bookInfo.bookType === 2 && bookInfo.stateType === 0">
+      <h3>{{ '活动单价' }}</h3>
+      <p>{{ bookInfo.price }}.00 元/人</p>
+    </div>
+    <div class="price-item-frame">
+      <h3>已付金额</h3>
+      <p>{{ bookInfo.totalPrice }}.00 元</p>
+    </div>
+    <div class="price-item-frame" v-if="priceDiffFromBefore">
+      <h3>{{ priceDiffFromBefore > 0 ? '修改应补' : '修改应退' }}</h3>
+      <p>{{ Math.abs(priceDiffFromBefore) }}.00 元</p>
+    </div>
+    <div class="price-item-frame">
+      <h3>{{ bookInfo.bookType === 2 ? '活动地点' : '咨询地点' }}</h3>
+      <p>{{ bookInfo.location }}</p>
+    </div>
+    <div class="price-item-frame">
+      <h3>{{ bookInfo.bookType === 2 ? '活动时间' : '咨询时间' }}</h3>
+      <p>{{ bookInfo.startTime }} ~ {{ bookInfo.endTime }}</p>
+    </div>
+    <div class="price-item-frame" v-if="priceDiffFromBefore > 0">
       <h3>支付方式</h3>
-      <!--          <el-select v-model="test">-->
-      <!--            <el-option-->
-      <!--                v-for="(sitem, index) in ['支付宝', '微信支付', 'payPal', 'applePay']"-->
-      <!--                :key="sitem"-->
-      <!--                :label="sitem"-->
-      <!--                :value="index"/>-->
-      <!--          </el-select>-->
+      <el-select v-model="test">
+        <el-option
+            v-for="(sitem, index) in ['支付宝', '微信支付', 'payPal', 'applePay']"
+            :key="sitem"
+            :label="sitem"
+            :value="index"/>
+      </el-select>
     </div>
   </div>
-  <div id="confirm-button-frame">
-    <el-button type="primary">保存更改</el-button>
-    <el-button type="danger">取消预约</el-button>
+  <div id="confirm-button-frame" v-if="bookInfo.stateType === 0">
+    <el-button type="primary" @click="modifyBook()">保存更改</el-button>
+    <el-button type="danger" @click="deleteBook()">{{ isDeletingBook ? '确认取消' : '取消预约' }}</el-button>
+    <el-select v-model="cancel" v-if="isDeletingBook" placeholder="请选择取消原因">
+      <el-option
+          v-for="(sitem, index) in ['行程变动', '更换咨询师', '对预约流程不满意', '与咨询师提前沟通不满意', '保密']"
+          :key="sitem"
+          :label="sitem"
+          :value="sitem"/>
+    </el-select>
   </div>
 </template>
 
 <script>
+import {ElMessage, ElMessageBox} from "element-plus";
+
 export default {
   name: "BookHistoryItem",
   props: {
     bookInfo: Object,
     extraInfo: Object,
-    fellowList: Array,
+    fellowListOld: Array,
     index: Number
   },
   data() {
     return {
+      fellowList: [],
       candidateFellow: [],
       fellowDeleting: [],
       fellowAdding: [],
+      allFellowList: [],
+
+      test: null,
+
+      isDeletingBook: false,
+      cancel: '',
 
       inputList: [],
     }
@@ -171,10 +194,13 @@ export default {
       } else {
         return this.bookInfo.upLimit - this.fellowList.length
       }
+    },
+    priceDiffFromBefore() {
+      return this.bookInfo.price * this.fellowList.length - this.bookInfo.totalPrice
     }
   },
-  methods:{
-    clearInput(){
+  methods: {
+    clearInput() {
       this.inputList = [{
         inputTitle: '[必填]请问您选择在线下门店咨询还是线上渠道咨询？',
         bookTypeList: [0, 1],
@@ -236,7 +262,7 @@ export default {
         input: null,
       }]
     },
-    parseInput(){
+    parseInput() {
       if (this.bookInfo.bookType === 2) {
         if (this.extraInfo.expectation)
           this.inputList[5].input = this.extraInfo.expectation
@@ -248,17 +274,17 @@ export default {
           this.inputList[8].input = JSON.parse(this.extraInfo.reason)
         }
       } else {
-        if(this.extraInfo.isOnline === 0 || this.extraInfo.isOnline === 1)
+        if (this.extraInfo.isOnline === 0 || this.extraInfo.isOnline === 1)
           this.inputList[0].input = this.extraInfo.isOnline
-        else if(this.bookInfo.isOnline === 0 || this.bookInfo.isOnline === 1)
+        else if (this.bookInfo.isOnline === 0 || this.bookInfo.isOnline === 1)
           this.inputList[0].input = this.bookInfo.isOnline
-        if (this.extraInfo.basicInfo){
+        if (this.extraInfo.basicInfo) {
           let temp = JSON.parse(this.extraInfo.basicInfo)
           this.inputList[1].input1 = temp.input1
           this.inputList[1].input2 = temp.input2
           this.inputList[1].input3 = temp.input3
         }
-        if (this.extraInfo.relation){
+        if (this.extraInfo.relation) {
           let temp = JSON.parse(this.extraInfo.relation)
           this.inputList[2].input1 = temp.input1
           this.inputList[2].input2 = temp.input2
@@ -273,17 +299,254 @@ export default {
           this.inputList[8].input = JSON.parse(this.extraInfo.reason)
         }
       }
+    },
+    selectFellow(index) {
+      if (this.bookInfo.stateType !== 0) {
+        return
+      }
+      if (this.fellowDeleting.indexOf(index) !== -1) {
+        this.fellowDeleting.splice(this.fellowDeleting.indexOf(index), 1)
+      } else {
+        this.fellowDeleting.push(index)
+      }
+    },
+    searchFellowName(query) {
+      this.candidateFellow = []
+      for (let i = 0; i < this.allFellowList.length; ++i) {
+        if ((this.allFellowList[i].nickname.includes(query) || this.allFellowList[i].note.includes(query)) && !this.allFellowList[i].hasChosen) {
+          this.candidateFellow.push(this.allFellowList[i])
+        }
+      }
+    },
+    addFellow() {
+      if (this.fellowNumRemain < this.fellowAdding.length) {
+        ElMessage.error('添加人数超过限制。')
+        return
+      }
+      for (let i = 0; i < this.fellowAdding.length; ++i) {
+        this.fellowAdding[i].hasChosen = true
+      }
+      this.fellowList = this.fellowList.concat(this.fellowAdding)
+      this.fellowAdding = []
+    },
+    parseFellowList() {
+      this.fellowList = this.fellowListOld
+      this.fetchAllFellowList()
+    },
+    fetchAllFellowList() {
+      this.isFetchingAllFellowList = true
+      this.$request.get('/fellow/list', {
+        params: {userId: this.extraInfo.userId}
+      }).then((res) => {
+        this.allFellowList = res.msg
+        let newFellowList = []
+        for (let i = 0; i < this.fellowList.length; ++i) {
+          for (let j = 0; j < this.allFellowList.length; ++j) {
+            if (this.fellowList[i].fellowId === this.allFellowList[j].fellowId) {
+              this.allFellowList[j].hasChosen = true
+              newFellowList.push(this.allFellowList[j])
+            }
+          }
+        }
+        this.fellowList = newFellowList
+        this.searchFellowName('')
+        this.isFetchingAllFellowList = false
+      })
+    },
+    deleteFellowFromList() {
+      let nextFellowList = []
+      for (let i = 0; i < this.fellowList.length; ++i) {
+        if (this.fellowDeleting.indexOf(i) === -1) {
+          nextFellowList.push(this.fellowList[i])
+        } else {
+          this.fellowList[i].hasChosen = undefined
+        }
+      }
+      this.fellowDeleting = []
+      this.fellowList = nextFellowList
+      this.searchFellowName('')
+    },
+    modifyBook() {
+      if (this.fellowList.length === 0) {
+        ElMessage.error('您暂未选择咨询者，请补充后重试')
+        return
+      } else if (this.bookInfo.bookType !== 2 && this.inputList[0].input === null) {
+        ElMessage.error('您暂未选择线上或线下进行咨询，请补充后重试。')
+        return
+      } else if (this.bookInfo.bookType !== 2 &&
+          (this.inputList[1].input === null || (this.inputList[1].input1 === 0 && this.inputList[1].input2 === null))) {
+        ElMessage.error('您暂未填写咨询者相关的必填项，请补充后重试。')
+        return
+      } else if (this.test === null) {
+        ElMessage.error('您暂未选择支付方式，请补充后重试。')
+        return
+      }
+      ElMessageBox.confirm(
+          '您确认所填信息真实无误，并确认修改本次预约吗？',
+          '',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+      ).then(() => {
+        if (this.bookInfo.bookType === 2) {
+          this.submitEventBook()
+        } else {
+          this.submitCounselorBook()
+        }
+      })
+    },
+    submitEventBook() {
+      let newFellowId = []
+      this.fellowList.forEach(e => newFellowId.push(e.fellowId))
+      let oldFellowId = []
+      this.fellowListOld.forEach(e => oldFellowId.push(e.fellowId))
+
+      let addIdList = newFellowId.filter(item => !oldFellowId.includes(item))
+      let deleteIdList = oldFellowId.filter(item => !newFellowId.includes(item))
+
+      let expectation = this.inputList[5].input
+
+      let question = this.inputList[6].input
+
+      let road = this.inputList[7].input
+
+      let reason = JSON.stringify(this.inputList[8].input)
+
+      this.$request.post('/eventBook/modify', {
+        userId: this.extraInfo.userId,
+        eventId: this.extraInfo.eventId,
+        userEventId: this.extraInfo.id,
+        expectation,
+        question,
+        road,
+        reason
+      }).then(() => {
+        this.request.post('/eventBook/addFellow', {
+          userId: this.extraInfo.userId,
+          eventId: this.extraInfo.eventId,
+          fellowId: addIdList
+        })
+      }).then(() => {
+        this.request.post('/eventBook/deleteFellow', {
+          userId: this.extraInfo.userId,
+          eventId: this.extraInfo.eventId,
+          fellowId: deleteIdList
+        })
+      }).then(() => {
+        ElMessage.success('修改成功！')
+      }).catch((err) => {
+        ElMessage.error('修改失败：' + err.msg)
+      })
+
+    },
+    submitCounselorBook() {
+
+      let newFellowId = []
+      this.fellowList.forEach(e => newFellowId.push(e.fellowId))
+      let oldFellowId = []
+      this.fellowListOld.forEach(e => oldFellowId.push(e.fellowId))
+
+      let addIdList = newFellowId.filter(item => !oldFellowId.includes(item))
+      let deleteIdList = oldFellowId.filter(item => !newFellowId.includes(item))
+
+      let basicInfo = JSON.stringify({
+        input1: this.inputList[1].input1,
+        input2: this.inputList[1].input2,
+        input3: this.inputList[1].input3,
+      })
+
+      let relation = JSON.stringify({
+        input1: this.inputList[2].input1,
+        input2: this.inputList[2].input2,
+      })
+
+      let problem = JSON.stringify(this.inputList[3].input)
+
+      let addition = this.inputList[4].input
+
+      let road = this.inputList[7].input
+
+      let reason = JSON.stringify(this.inputList[8].input)
+
+      this.$request.post('/counselorBook/modify', {
+        userId: this.extraInfo.userId,
+        counselorBookId: this.extraInfo.counselorBookId,
+        userCounselorId: this.extraInfo.id,
+        isOnline: this.inputList[0].input,
+        basicInfo,
+        relation,
+        problem,
+        addition,
+        road,
+        reason
+      }).then(() => {
+        this.request.post('/counselorBook/addFellow', {
+          userId: this.extraInfo.userId,
+          eventId: this.extraInfo.eventId,
+          fellowId: addIdList
+        })
+      }).then(() => {
+        this.request.post('/counselorBook/deleteFellow', {
+          userId: this.extraInfo.userId,
+          eventId: this.extraInfo.eventId,
+          fellowId: deleteIdList
+        })
+      }).then(() => {
+        ElMessage.success('修改成功！')
+      }).catch((err) => {
+        ElMessage.error('预约失败：' + err.msg)
+      })
+    },
+    deleteBook() {
+      if (this.isDeletingBook === false)
+        this.isDeletingBook = true
+      else {
+        ElMessageBox.confirm(
+            '一旦操作无法撤销，您确认取消本次预约吗？',
+            '',
+            {
+              confirmButtonText: '确认',
+              cancelButtonText: '取消',
+              type: 'warning',
+            }
+        ).then(()=>{
+          if(this.bookInfo.bookType === 2) {
+            this.$request.post('/eventBook/cancel', {
+              userId: this.extraInfo.userId,
+              bookId: this.extraInfo.eventId,
+              userEventId: this.extraInfo.id,
+              cancel: this.cancel
+            })
+          } else{
+            this.$request.post('/counselorBook/cancel', {
+              userId: this.extraInfo.userId,
+              bookId: this.extraInfo.counselorBookId,
+              userCounselorId: this.extraInfo.id,
+              cancel: this.cancel
+            })
+          }
+        }).then(() => {
+          ElMessage.success('删除成功，期待与您的再次相遇。')
+        }).catch((err) => {
+          ElMessage.error('删除失败：' + err.msg)
+        })
+      }
     }
   },
-  watch:{
-    index:{
+  watch: {
+    index: {
       handler() {
+        this.parseFellowList()
         this.clearInput()
         this.parseInput()
+        this.searchFellowName('')
       }
     }
   },
   mounted() {
+    this.parseFellowList()
     this.clearInput()
     this.parseInput()
   }
@@ -291,8 +554,66 @@ export default {
 </script>
 
 <style scoped>
+
+#hr-division-line {
+  margin: 20px 0;
+  height: 1px;
+  background-image: -webkit-linear-gradient(bottom left, rgb(255, 94, 155) 30%, rgb(115, 204, 255) 50%);
+}
+
+.detail-item-frame :deep(.input-item-frame) {
+  margin: 15px 0;
+  border-radius: 10px;
+  display: inline-block;
+  width: calc(100% - 2px);
+  /*padding: 0 15px;*/
+  padding: 15px;
+  box-sizing: border-box;
+  border: unset;
+  border-left: 5px solid var(--light-blue);
+  border-right: 5px solid var(--light-blue);
+}
+
+.input-item-frame :deep(.el-select), .input-item-frame :deep(.el-input), .input-item-frame :deep(.el-textarea) {
+
+  display: block;
+  margin: 10px 0 5px 0;
+}
+
+.input-item-frame :deep(.el-select) {
+  width: 200px;
+}
+
+.input-item-frame :deep(.el-textarea__inner) {
+  max-height: 200px;
+}
+
+.detail-item-frame :deep(.input-item-frame h3) {
+  margin: 0 0 15px 0;
+  font-weight: normal;
+  font-size: 16px;
+}
+
+.price-item-frame {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.price-item-frame h3 {
+  margin: 0;
+  margin-right: 20px;
+  font-size: 16px;
+}
+
+.price-item-frame p {
+  font-size: 16px;
+  margin: 0;
+}
+
 .fellow-control-frame :deep(.el-button), #confirm-button-frame :deep(.el-button--danger) {
   margin-left: 20px;
+  margin-right: 10px;
   background-color: var(--pink);
 }
 

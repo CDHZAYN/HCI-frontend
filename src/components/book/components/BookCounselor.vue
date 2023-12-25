@@ -175,7 +175,7 @@ export default {
           }
           this.fetchCounselorBook()
         }
-      }, 200)
+      }, 1000)
     },
     fetchCounselorBook() {
       this.isListLoading = true
@@ -241,7 +241,7 @@ export default {
           }
           this.fetchEventBook()
         }
-      }, 200)
+      }, 1000)
     },
     fetchEventBook() {
       this.isListLoading = true

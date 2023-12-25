@@ -56,7 +56,7 @@
                     :autosize="{ maxRows: 6 }"/>
         </div>
         <div v-else-if="item.inputType === 'select'">
-          <el-select v-model="item.input">
+          <el-select v-model="item.input"  placeholder=" ">
             <el-option
                 v-for="(sitem, index) in item.selectItem"
                 :key="sitem"
@@ -66,7 +66,7 @@
           </el-select>
         </div>
         <div v-else-if="item.inputType === 'selectAndInput'">
-          <el-select v-model="item.input1">
+          <el-select v-model="item.input1"  placeholder=" ">
             <el-option
                 v-for="(sitem, index) in item.selectItem"
                 :key="sitem"
@@ -78,7 +78,7 @@
                     v-if="item.input1 === item.inputCondition"/>
         </div>
         <div v-else-if="item.inputType === 'selectAndSelectAndInput'">
-          <el-select v-model="item.input1">
+          <el-select v-model="item.input1"  placeholder=" ">
             <el-option
                 v-for="(sitem, index) in item.selectItem1"
                 :key="sitem"
@@ -86,7 +86,7 @@
                 :value="index"
             />
           </el-select>
-          <el-select v-model="item.input2" v-if="item.input1 === item.select2Condition">
+          <el-select v-model="item.input2" v-if="item.input1 === item.select2Condition"  placeholder=" ">
             <el-option
                 v-for="(sitem, index) in item.selectItem2"
                 :key="sitem"
@@ -98,7 +98,7 @@
                     v-if="item.input2 === item.inputCondition"/>
         </div>
         <div v-else-if="item.inputType === 'multiSelect'">
-          <el-select v-model="item.input" multiple>
+          <el-select v-model="item.input" multiple  placeholder=" ">
             <el-option
                 v-for="(sitem, index) in item.selectItem"
                 :key="sitem"
@@ -120,23 +120,23 @@
       您在支付后，方可提交本次预约。
     </p>
     <div class="price-item-frame">
-      <h3>{{info.type === 2? '活动名称' : '咨询名称'}}</h3>
+      <h3>{{ info.type === 2 ? '活动名称' : '咨询名称' }}</h3>
       <p>{{ info.name }}</p>
     </div>
     <div class="price-item-frame" v-if="info.type === 2">
-      <h3>{{'活动单价'}}</h3>
+      <h3>{{ '活动单价' }}</h3>
       <p>{{ info.price }}.00 元/人</p>
     </div>
     <div class="price-item-frame">
-      <h3>{{info.type === 2? '活动总价' : '咨询价格'}}</h3>
+      <h3>{{ info.type === 2 ? '活动总价' : '咨询价格' }}</h3>
       <p>{{ info.price * fellowList.length }}.00 元</p>
     </div>
     <div class="price-item-frame">
-      <h3>{{info.type === 2? '活动地点' : '咨询地点'}}</h3>
+      <h3>{{ info.type === 2 ? '活动地点' : '咨询地点' }}</h3>
       <p>{{ inputList[0].input === 0 ? '线上' : info.location }}</p>
     </div>
     <div class="price-item-frame">
-      <h3>{{info.type === 2? '活动时间' : '咨询时间'}}</h3>
+      <h3>{{ info.type === 2 ? '活动时间' : '咨询时间' }}</h3>
       <p>{{ info.startTime }} ~ {{ info.endTime }}</p>
     </div>
     <div class="price-item-frame">
@@ -251,7 +251,7 @@ export default {
     searchFellowName(query) {
       this.candidateFellow = []
       for (let i = 0; i < this.allFellowList.length; ++i) {
-        if (this.allFellowList[i].nickname.includes(query) && !this.allFellowList[i].hasChosen) {
+        if ((this.allFellowList[i].nickname.includes(query) || this.allFellowList[i].note.includes(query)) && !this.allFellowList[i].hasChosen) {
           this.candidateFellow.push(this.allFellowList[i])
         }
       }
@@ -287,12 +287,20 @@ export default {
       this.fellowList = nextFellowList
       this.searchFellowName('')
     },
-    fetchAllFellowList(){
+    fetchAllFellowList() {
       this.isFetchingAllFellowList = true
       this.$request.get('/fellow/list', {
         params: {userId: this.userId}
       }).then((res) => {
-        this.allFellowList.push(...res.msg.slice(this.allFellowList.length))
+        let startIndex = 0
+        for (let i = 0; i < res.msg.length; ++i) {
+          console.log(res.msg[i].fellowId, this.allFellowList[this.allFellowList.length - 1].fellowId)
+          if (res.msg[i].fellowId === this.allFellowList[this.allFellowList.length - 1].fellowId) {
+            startIndex = i
+            break
+          }
+        }
+        this.allFellowList.push(...res.msg.slice(startIndex + 1))
         this.searchFellowName('')
         this.isFetchingAllFellowList = false
       })
@@ -403,7 +411,7 @@ export default {
       params: {userId: this.userId}
     }).then((res) => {
       this.allFellowList = res.msg
-      if(!this.allFellowList.length){
+      if (!this.allFellowList.length) {
         ElMessage.error('您还未添加咨询者，请点击页面右上角，前往设置页面添加咨询者。')
       }
       this.searchFellowName('')
@@ -510,7 +518,7 @@ p.deleting-fellow {
 }
 
 .input-item-frame h3 {
-  margin: 0 0 5px 0;
+  margin: 0 0 15px 0;
   font-weight: normal;
   font-size: 16px;
 }

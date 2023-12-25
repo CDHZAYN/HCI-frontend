@@ -27,7 +27,7 @@
     </div>
   </div>
   <Transition appear>
-    <div class="counselor-hover" v-show="hoverDisplay" @mouseleave="console.log('leave');mouseLeaveItem()"
+    <div class="counselor-hover" v-show="hoverDisplay" @mouseleave="mouseLeaveItem()"
          :style="{'transform': `translate(${hoverX}px, ${hoverY - 100}px)`}" :key="showingCounselor.name">
       <div id="counselor-hover-title">
         <h1>{{ showingCounselor.name }}</h1>
@@ -181,7 +181,7 @@ export default {
           }
           this.fetchSearch()
         }
-      }, 200)
+      }, 1000)
     },
     fetchSearch() {
       this.$request.post('/counselor/list', {
@@ -199,6 +199,7 @@ export default {
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && !this.hasGetAll) {
         this.filterSearchWrapper()
+        // this.fetchSearch()
       } else {
         // console.log('left bottom')
       }
