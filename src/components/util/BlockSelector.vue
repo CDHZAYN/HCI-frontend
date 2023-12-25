@@ -56,11 +56,6 @@ export default {
   mounted() {
     this.$refs['item' + 0][0].style.color = 'white'
     this.blockWidth = this.$refs['item' + 0][0].clientWidth + 20
-    this.$emit('changeSelect', {
-      index: 0,
-      type: this.type,
-      text: this.list[0]
-    })
   }
 }
 </script>

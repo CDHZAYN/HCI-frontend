@@ -18,7 +18,7 @@
   </div>
   <div class="fellow-control-frame">
     <el-select multiple filterable reserve-keyword :filter-method="searchFellowName" v-model="fellowAdding"
-               @blur="addFellow" placeholder="添加咨询者" value-key="nickname">
+               @blur="addFellow" placeholder="添加咨询者" value-key="nickname" @focus="fetchAllFellowList">
       <el-option
           v-for="(item, index) in candidateFellow"
           :key="item.nickname"
@@ -120,19 +120,23 @@
       您在支付后，方可提交本次预约。
     </p>
     <div class="price-item-frame">
-      <h3>咨询名称</h3>
+      <h3>{{info.type === 2? '活动名称' : '咨询名称'}}</h3>
       <p>{{ info.name }}</p>
     </div>
-    <div class="price-item-frame">
-      <h3>咨询价格</h3>
-      <p>{{ info.price }}.00 元</p>
+    <div class="price-item-frame" v-if="info.type === 2">
+      <h3>{{'活动单价'}}</h3>
+      <p>{{ info.price }}.00 元/人</p>
     </div>
     <div class="price-item-frame">
-      <h3>咨询地点</h3>
+      <h3>{{info.type === 2? '活动总价' : '咨询价格'}}</h3>
+      <p>{{ info.price * fellowList.length }}.00 元</p>
+    </div>
+    <div class="price-item-frame">
+      <h3>{{info.type === 2? '活动地点' : '咨询地点'}}</h3>
       <p>{{ info.location }}</p>
     </div>
     <div class="price-item-frame">
-      <h3>咨询时间</h3>
+      <h3>{{info.type === 2? '活动时间' : '咨询时间'}}</h3>
       <p>{{ info.startTime }} ~ {{ info.endTime }}</p>
     </div>
     <div class="price-item-frame">
@@ -169,14 +173,16 @@ export default {
       candidateFellow: [],
       fellowDeleting: [],
       fellowAdding: [],
+
+      isFetchingAllFellowList: false,
       inputList: [{
-        inputTitle: '[必填]请问你选择在线下门店咨询还是线上渠道咨询？',
+        inputTitle: '[必填]请问您选择在线下门店咨询还是线上渠道咨询？',
         bookTypeList: [0, 1],
         inputType: 'select',
         selectItem: ['线上渠道', '线下门店'],
         input: null,
       }, {
-        inputTitle: '[必填]请问你在为他人预约吗？你所帮助预约的对象和你是什么关系？',
+        inputTitle: '[必填]请问您在为他人预约吗？您所帮助预约的对象和您是什么关系？',
         bookTypeList: [0, 1],
         inputType: 'selectAndSelectAndInput',
         selectItem1: ['为他人预约', '为自己预约'],
@@ -195,35 +201,35 @@ export default {
         input1: null,
         input2: null,
       }, {
-        inputTitle: '[多选]请问你/咨询者遇到了什么类型的问题？',
+        inputTitle: '[多选]请问您/咨询者遇到了什么类型的问题？',
         bookTypeList: [0, 1],
         inputType: 'multiSelect',
         selectItem: ['行为异常疾病（多动症、双向情感障碍等）', '悲观情绪（情绪失控、压力、焦虑、沮丧、绝望等）',
           '社会关系（社交压力、家庭冲突、职场冲突等）', '创伤经历（身体虐待、性虐待等）'],
         input: null,
       }, {
-        inputTitle: '除了上述问题，你还有什么想要告诉我们的吗？',
+        inputTitle: '除了上述问题，您还有什么想要告诉我们的吗？',
         bookTypeList: [0, 1],
         inputType: 'input',
         input: null,
       }, {
-        inputTitle: '请问你想从活动中了解一些什么？',
+        inputTitle: '请问您想从活动中了解一些什么？',
         bookTypeList: [2],
         inputType: 'input',
         input: null,
       }, {
-        inputTitle: '请问你有什么想问活动嘉宾的吗？',
+        inputTitle: '请问您有什么想问活动嘉宾的吗？',
         bookTypeList: [2],
         inputType: 'input',
         input: null,
       }, {
-        inputTitle: '请问你怎么知道我们的？',
+        inputTitle: '请问您怎么知道我们的？',
         bookTypeList: [0, 1, 2],
         inputType: 'select',
         selectItem: ['网络搜索', '朋友推荐', '社交媒体', '曾参与过我们组织的活动'],
         input: null,
       }, {
-        inputTitle: '[多选]请问你选择我们的原因是？',
+        inputTitle: '[多选]请问您选择我们的原因是？',
         bookTypeList: [0, 1, 2],
         inputType: 'multiSelect',
         selectItem: ['拥有专业资质和丰富经验', '秉持个性化和综合性的咨询方法', '网站详实的介绍', '注重隐私和尊重客户'],
@@ -281,6 +287,16 @@ export default {
       this.fellowList = nextFellowList
       this.searchFellowName('')
     },
+    fetchAllFellowList(){
+      this.isFetchingAllFellowList = true
+      this.$request.get('/fellow/list', {
+        params: {userId: this.userId}
+      }).then((res) => {
+        this.allFellowList.push(...res.msg.slice(this.allFellowList.length))
+        this.searchFellowName('')
+        this.isFetchingAllFellowList = false
+      })
+    },
     submit() {
       if (this.fellowList.length === 0) {
         ElMessage.error('您暂未选择咨询者，请补充后重试')
@@ -305,7 +321,7 @@ export default {
             type: 'warning',
           }
       ).then(() => {
-        if (this.type === 2) {
+        if (this.info.type === 2) {
           this.submitEventBook()
         } else {
           this.submitCounselorBook()
@@ -313,8 +329,8 @@ export default {
       })
     },
     submitEventBook() {
-      let userFellowId = []
-      this.fellowList.forEach(e => userFellowId.push(e.fellowId))
+      let fellowId = []
+      this.fellowList.forEach(e => fellowId.push(e.fellowId))
 
       let expectation = this.inputList[5].input
 
@@ -324,9 +340,10 @@ export default {
 
       let reason = JSON.stringify(this.inputList[8].input)
 
-      this.$request.post('/counselorBook/book', {
+      this.$request.post('/eventBook/book', {
         userId: this.userId,
-        userFellowId,
+        eventId: this.info.id,
+        fellowId,
         expectation,
         question,
         road,
@@ -364,6 +381,7 @@ export default {
 
       this.$request.post('/counselorBook/book', {
         userId: this.userId,
+        counselorBookId: this.info.id,
         isOnline: this.inputList[0].input,
         userFellowId,
         basicInfo,
@@ -385,6 +403,9 @@ export default {
       params: {userId: this.userId}
     }).then((res) => {
       this.allFellowList = res.msg
+      if(!this.allFellowList.length){
+        ElMessage.error('您还未添加咨询者，请点击页面右上角，前往设置页面添加咨询者。')
+      }
       this.searchFellowName('')
     })
   }

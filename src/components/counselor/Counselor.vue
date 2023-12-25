@@ -58,7 +58,7 @@
       </div>
     </Transition>
   </div>
-  <div id="bottom-frame" v-show="this.counselorList.length || this.hasGetAll">
+  <div id="bottom-frame">
     <div v-if="hasGetAll"><p>已经到底啦~</p></div>
     <div v-else>
       <div v-loading="true"></div>
@@ -132,23 +132,23 @@ export default {
     },
     getSearchCondition() {
 
-      let fieldLabel = this.conditionForm['field'].text
-      if (fieldLabel.indexOf('全部') !== -1) fieldLabel = undefined
-      let location = this.conditionForm['location'].text
-      if (location.indexOf('全部') !== -1) location = undefined
-      let form = this.conditionForm['counselType'].text
-      if (form.indexOf('全部') !== -1) form = undefined
 
-      let sex = this.conditionForm['sex'].index
-      if (sex === 0)
-        sex = undefined
-      else
-        sex--
-      let position = this.conditionForm['position'].index
-      if (position === 0)
-        position = undefined
-      else
-        position--
+      let fieldLabel = undefined
+      if (this.conditionForm['field'] && this.conditionForm['field'].text.indexOf('全部') !== -1)
+        fieldLabel = this.conditionForm['field'].text
+      let location = undefined
+      if (this.conditionForm['location'] && this.conditionForm['location'].text.indexOf('全部') !== -1)
+        location = this.conditionForm['location'].text
+      let form = undefined
+      if (this.conditionForm['counselType'] && this.conditionForm['counselType'].text.indexOf('全部') !== -1)
+        form = this.conditionForm['counselType'].text
+
+      let sex = undefined
+      if (this.conditionForm['sex'] && this.conditionForm['sex'].index !== 0)
+        sex = this.conditionForm['sex'].index - 1
+      let position = undefined
+      if (this.conditionForm['position'] && this.conditionForm['position'].index !== 0)
+        position = this.conditionForm['position'].index - 1
 
       return {
         counselorName: this.searchName,
@@ -163,21 +163,25 @@ export default {
       }
     },
     filterChange(selectBlock) {
-
       this.conditionForm[selectBlock.type] = selectBlock
+      this.filterSearchWrapper(true)
+    },
+    filterSearchWrapper(isToClear) {
       this.queueingId++
       const queueingIdFrozen = this.queueingId
 
       setTimeout(() => {
         if (this.queueingId === queueingIdFrozen) {
-          this.skip = 0
-          this.hasGetAll = false
-          this.isHover = false
-          this.showingCounselor = {}
-          this.counselorList = []
+          if(isToClear){
+            this.skip = 0
+            this.hasGetAll = false
+            this.isHover = false
+            this.showingCounselor = {}
+            this.counselorList = []
+          }
           this.fetchSearch()
         }
-      }, 1000)
+      }, 200)
     },
     fetchSearch() {
       this.$request.post('/counselor/list', {
@@ -194,7 +198,7 @@ export default {
   mounted() {// 观察底部
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && !this.hasGetAll) {
-        this.fetchSearch()
+        this.filterSearchWrapper()
       } else {
         // console.log('left bottom')
       }

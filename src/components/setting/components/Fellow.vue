@@ -86,8 +86,7 @@ export default {
   },
   computed: {
     age() {
-      console.log(this.detail.birth)
-      if (!this.detail.birth) {
+      if (!this.detail.birth || this.detail.birth.toString() === 'Invalid Date') {
         return '保密'
       }
       const age = Math.floor((Date.now() - this.detail.birth) / 24 / 3600 / 1000 / 365)
@@ -129,7 +128,10 @@ export default {
         }).then((res) => {
           let detail = res.msg
           detail.fellowId = detail.id
-          detail.birth = new Date(detail.birthYear, detail.birthMonth, 1)
+          if(detail.birthYear)
+            detail.birth = new Date(detail.birthYear, detail.birthMonth, 1)
+          else
+            detail.birth = undefined
           detail.sex = Number.parseInt(detail.sex)
           this.detailTemp = JSON.parse (JSON.stringify (detail))
           this.detailTemp.birth = new Date(this.detailTemp.birth)
@@ -181,9 +183,10 @@ export default {
           let birthYear = undefined
           let birthMonth = undefined
           if(this.detail.birth){
-            let birthYear = this.detail.birth.getFullYear()
-            let birthMonth = this.detail.birth.getMonth() + 1
-            if (this.detail > Date.now()) {
+            birthYear = this.detail.birth.getFullYear()
+            birthMonth = this.detail.birth.getMonth()
+            console.log(birthYear, birthMonth, this.detail.birth, new Date(), this.detail.birth > new Date())
+            if (this.detail.birth > new Date()) {
               birthYear = undefined
               birthMonth = undefined
             }

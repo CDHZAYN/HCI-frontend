@@ -47,7 +47,7 @@
             {{ item.endTime.substring(item.endTime.indexOf(' '), item.endTime.lastIndexOf(':')) }}</h4>
         </div>
         <div class="price-frame">
-          <h4>￥{{ item.price }}</h4>
+          <h4>￥{{ item.price }} {{ type === 2 ? '/ 人' : '' }}</h4>
         </div>
       </div>
       <div v-else style="text-align: center">
@@ -129,28 +129,26 @@ export default {
       this.bookList = []
       this.bookItemSelecting = -1
       if (this.type !== 2 && this.availableDateList.indexOf(parseInt(data.day.split('-')[2])) !== -1)
-        this.fetchCounselorBook()
+        this.fetchCounselorBookWrapper(true)
       if (this.type === 2) {
-        this.fetchEventBook()
+        this.fetchEventBookWrapper(true)
       }
     },
     getSearchCondition() {
 
-      let fieldLabel = this.conditionForm['field'].text
-      if (fieldLabel.indexOf('全部') !== -1) fieldLabel = undefined
-      let location = this.conditionForm['location'].text
-      if (location.indexOf('全部') !== -1) location = undefined
+      let fieldLabel = undefined
+      if (this.conditionForm['field'] && this.conditionForm['field'].text.indexOf('全部') !== -1)
+        fieldLabel = this.conditionForm['field'].text
+      let location = undefined
+      if (this.conditionForm['location'] && this.conditionForm['location'].text.indexOf('全部') !== -1)
+        location = this.conditionForm['location'].text
 
-      let sex = this.conditionForm['sex'].index
-      if (sex === 0)
-        sex = undefined
-      else
-        sex--
-      let position = this.conditionForm['position'].index
-      if (position === 0)
-        position = undefined
-      else
-        position--
+      let sex = undefined
+      if (this.conditionForm['sex'] && this.conditionForm['sex'].index !== 0)
+        sex = this.conditionForm['sex'].index - 1
+      let position = undefined
+      if (this.conditionForm['position'] && this.conditionForm['position'].index !== 0)
+        position = this.conditionForm['position'].index - 1
 
       return {
         counselorName: this.searchName,
@@ -162,6 +160,21 @@ export default {
         position,
         skip: this.skip
       }
+    },
+    fetchCounselorBookWrapper(isToClear){
+      this.queueingId++
+      const queueingIdFrozen = this.queueingId
+
+      setTimeout(() => {
+        if (this.queueingId === queueingIdFrozen) {
+          if(isToClear){
+            this.skip = 0
+            this.hasGetAll = false
+            this.counselorIdList = []
+          }
+          this.fetchCounselorBook()
+        }
+      }, 200)
     },
     fetchCounselorBook() {
       this.isListLoading = true
@@ -186,6 +199,10 @@ export default {
           dateStrSplit[0] = Number.parseInt(dateStrSplit[0])
           dateStrSplit[1] = Number.parseInt(dateStrSplit[1]) - 1
           dateStrSplit[2] = Number.parseInt(dateStrSplit[2])
+          if (this.availableDateList.indexOf(dateStrSplit[2]) === -1) {
+            this.isListLoading = false
+            return
+          }
           date = new Date(...dateStrSplit)
           if (date.getTime() < Date.now()) {
             date = new Date()
@@ -208,20 +225,22 @@ export default {
       })
     },
     filterChange(selectBlock) {
-
       this.conditionForm[selectBlock.type] = selectBlock
+      this.fetchCounselorBookWrapper(true)
+    },
+    fetchEventBookWrapper(isToClear){
       this.queueingId++
       const queueingIdFrozen = this.queueingId
 
       setTimeout(() => {
         if (this.queueingId === queueingIdFrozen) {
-          this.skip = 0
-          this.hasGetAll = false
-          this.isHover = false
-          this.counselorIdList = []
-          this.fetchCounselorBook()
+          if(isToClear){
+            this.skip = 0
+            this.hasGetAll = false
+          }
+          this.fetchEventBook()
         }
-      }, 1000)
+      }, 200)
     },
     fetchEventBook() {
       this.isListLoading = true
@@ -253,18 +272,23 @@ export default {
   },
   mounted() {
     if (this.type === 2) {
-      this.fetchEventBook()
+      this.fetchEventBookWrapper()
       this.$request.get('/eventBook/date').then((res) => {
         res.msg.forEach(e => {
           this.availableDateList.push(parseInt(e.split('-')[2]))
         })
       })
     } else {
-      for (let i = 0; i < 14; ++i) {
-        let date = new Date()
-        date.setDate(date.getDate() + i)
-        this.availableDateList.push(date.getDate())
-      }
+      this.fetchCounselorBookWrapper()
+      this.$request.get('/counselorBook/date', {
+        params: {
+          type: this.type === 0 ? '单人咨询' : '多人咨询',
+        }
+      }).then((res) => {
+        res.msg.forEach(e => {
+          this.availableDateList.push(parseInt(e.split('-')[2]))
+        })
+      })
     }
   }
 }
@@ -322,10 +346,15 @@ export default {
 #calendar-frame {
   display: flex;
   justify-content: space-evenly;
+  align-items: center;
 }
 
 #calendar-frame :deep(.el-calendar__header) {
   justify-content: center;
+}
+
+#calendar-frame :deep(.is-selected){
+  background-color: unset;
 }
 
 #calendar-frame :deep(.is-today.is-selected) {

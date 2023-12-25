@@ -49,7 +49,7 @@
             <Fellow :userInfo="userInfo"></Fellow>
           </div>
           <div class="level2" v-else-if="level2Type === '3'">
-            <BookHistory></BookHistory>
+            <BookHistory :userInfo="userInfo"></BookHistory>
           </div>
         </Transition>
       </div>
