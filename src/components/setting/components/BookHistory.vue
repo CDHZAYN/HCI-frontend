@@ -8,7 +8,7 @@
         <img :src="item.book.profile">
         <div class="info-item">
           <h1>{{ item.book.name }}</h1>
-          <h3>{{ item.book.location }} | {{item.book.diff}}
+          <h3 :class="{'is-pending': item.book.stateType === 0}">{{ item.book.location }} | {{item.book.diff}}
             {{ item.book.startTime.substring(item.book.startTime.indexOf(' '), item.book.startTime.lastIndexOf(':')) }} ~
             {{ item.book.endTime.substring(item.book.endTime.indexOf(' '), item.book.endTime.lastIndexOf(':')) }}</h3>
         </div>
@@ -112,6 +112,11 @@ export default {
         bookListTemp.forEach(e => {
           e.book.diff = this.getDiffFromNow(e.book.startTime)
           e.book.totalPrice = e.book.price * e.userFellow.length
+
+
+          if(e.book.isOnline === 1 || e.userBook.isOnline === 0){
+            e.book.location = '线上'
+
           let name = e.book.name
           if(name.indexOf('单人') !== -1)
             e.book.bookType = 0
@@ -119,15 +124,15 @@ export default {
             e.book.bookType = 1
           else
             e.book.bookType = 2
+
           const startTime = dayjs(e.book.startTime, "YYYY-MM-DD HH:mm:ss")
-          if(e.userBook.cancel)
+          if(e.userBook.cancel) {
+            e.book.location = '已取消'
             e.book.stateType = 1
-          else if (dayjs().isAfter(startTime))
+          } else if (dayjs().isAfter(startTime))
             e.book.stateType = 2
           else
             e.book.stateType = 0
-          if(e.book.isOnline === 1 || e.userBook.isOnline === 0){
-            e.book.location = '线上'
           }
         })
         console.log(bookListTemp[bookListTemp.length - 1])
@@ -214,6 +219,10 @@ export default {
   margin-right: 30px;
   overflow: hidden;
   text-align: left;
+}
+
+:deep(.info-item .is-pending) {
+  color: var(--blue);
 }
 
 :deep(.info-item h1) {

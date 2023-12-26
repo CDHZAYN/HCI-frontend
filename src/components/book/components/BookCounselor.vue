@@ -27,7 +27,7 @@
     <el-calendar :range="[rangeStart, rangeEnd]">
       <template #date-cell="{ data }">
         <div class="date-item" @click="selectDate(data)">
-          <p :class="{'date-selecting' : data.isSelected,
+          <p :class="{'date-selecting' : dateInfo.day === data.day,
            'date-not-available': availableDateList.indexOf(parseInt(data.day.split('-')[2])) === -1}">
             {{ data.day.split('-')[2] }}
           </p>
@@ -80,7 +80,7 @@ export default {
     return {
       searchName: '',
       range: [0, 1600],
-      field: ['全部领域', '亲密关系', '情绪困扰', '人际关系', '个人成长', '女性成长', '抑郁焦虑', '精神动力学', '亲子沟通'],
+      field: ['全部领域', '焦虑抑郁', '个人成长', '人际关系', '情绪困扰', '亲密关系', '创伤与压力', '精神动力学', '女性成长', '儿童问题'],
       location: ['全部地点', '静安寺店', '陆家嘴店'],
       sex: ['全部性别', '男咨询师', '女咨询师'],
       position: ['全部职位', '专业咨询师', '专家级咨询师', '资深级咨询师', '督导级咨询师'],
@@ -128,19 +128,19 @@ export default {
       this.dateInfo = data
       this.bookList = []
       this.bookItemSelecting = -1
-      if (this.type !== 2 && this.availableDateList.indexOf(parseInt(data.day.split('-')[2])) !== -1)
+      if (this.type !== 2 && this.availableDateList.indexOf(parseInt(data.day.split('-')[2])) !== -1) {
         this.fetchCounselorBookWrapper(true)
+      }
       if (this.type === 2) {
         this.fetchEventBookWrapper(true)
       }
     },
     getSearchCondition() {
-
       let fieldLabel = undefined
-      if (this.conditionForm['field'] && this.conditionForm['field'].text.indexOf('全部') !== -1)
+      if (this.conditionForm['field'] && this.conditionForm['field'].text.indexOf('全部') === -1)
         fieldLabel = this.conditionForm['field'].text
       let location = undefined
-      if (this.conditionForm['location'] && this.conditionForm['location'].text.indexOf('全部') !== -1)
+      if (this.conditionForm['location'] && this.conditionForm['location'].text.indexOf('全部') === -1)
         location = this.conditionForm['location'].text
 
       let sex = undefined
@@ -182,7 +182,7 @@ export default {
         res.msg.forEach((e) => {
           this.counselorIdList.push(e.id)
         })
-        if (res.msg.length < 8 && this.counselorIdList.length !== 0) {
+        if ((res.msg.length < 8 && this.counselorIdList.length !== 0) || (res.msg.length === 0 && this.skip === 0)) {
           return Promise.reject()
         } else {
           this.skip++
@@ -221,7 +221,8 @@ export default {
     },
     filterChange(selectBlock) {
       this.conditionForm[selectBlock.type] = selectBlock
-      this.fetchCounselorBookWrapper(true)
+      this.fetchAvailableCounselorBookDateWrapper()
+      // this.fetchCounselorBookWrapper(true)
     },
     fetchEventBookWrapper(isToClear) {
       if (this.isFetching)
@@ -260,12 +261,51 @@ export default {
         this.isFetching = false
       })
     },
+    fetchAvailableCounselorBookDateWrapper() {
+      if (this.isFetching)
+        return
+      this.isFetching = true
+      this.fetchAvailableCounselorBookDate()
+    },
+    fetchAvailableCounselorBookDate() {
+      if (!this.skip)
+        this.counselorIdList = []
+      this.$request.post('/counselor/list', {
+        ...this.getSearchCondition()
+      }).then((res) => {
+        res.msg.forEach((e) => {
+          this.counselorIdList.push(e.id)
+        })
+        if ((res.msg.length < 8 && this.counselorIdList.length !== 0) || (res.msg.length === 0 && this.skip === 0)) {
+          return Promise.reject()
+        } else {
+          this.skip++
+          this.fetchAvailableCounselorBookDate()
+        }
+      }).catch(() => {
+        this.availableDateList = []
+        this.$request.post('/counselorBook/date', {
+          counselorId: this.counselorIdList,
+          type: this.type === 0 ? '单人咨询' : '多人咨询',
+        }).then((res) => {
+          res.msg.forEach(e => {
+            this.availableDateList.push(parseInt(e.split('-')[2]))
+          })
+        }).finally(() => {
+          this.skip = 0
+          this.isFetching = false
+          this.bookItemSelecting = -1
+          this.bookList = []
+          this.dateInfo = {}
+        })
+      })
+    }
   },
   mounted() {
     if (this.type === 2) {
-      this.fetchEventBookWrapper()
       const userId = localStorage.getItem('userId')
       this.userId = userId
+      // this.fetchEventBookWrapper()
       this.$request.get('/eventBook/date', {
         params: {
           userId
@@ -276,16 +316,8 @@ export default {
         })
       })
     } else {
+      this.fetchAvailableCounselorBookDateWrapper()
       this.fetchCounselorBookWrapper()
-      this.$request.get('/counselorBook/date', {
-        params: {
-          type: this.type === 0 ? '单人咨询' : '多人咨询',
-        }
-      }).then((res) => {
-        res.msg.forEach(e => {
-          this.availableDateList.push(parseInt(e.split('-')[2]))
-        })
-      })
     }
   }
 }

@@ -82,8 +82,8 @@ export default {
     },
     fetchSearch() {
       let title = undefined
-      if (this.conditionForm.searchTitle)
-        title = this.conditionForm.searchTitle.text
+      if (this.searchTitle)
+        title = this.searchTitle
       let type = undefined
       if (this.conditionForm.type && this.conditionForm.type.index)
         type = this.conditionForm.type.index - 1
@@ -95,7 +95,7 @@ export default {
       }).then((res) => {
         this.skip++
         this.articleList.push(...res.msg)
-        if (res.msg.length < 8) {
+        if (res.msg.length < 5) {
           this.hasGetAll = true
         }
       }).finally(() => {
@@ -144,13 +144,17 @@ export default {
   flex-wrap: wrap;
 }
 
+#event-article-frame .event-article-item{
+  margin-top: 15px;
+}
+
 #event-article-frame .event-article-item, #event-article-frame .event-article-item a {
   display: flex;
   color: black;
   text-decoration: none;
   /*height: 300px;*/
   width: calc((100vw - 400px) / 2 - 20px);
-  margin-top: 5px;
+  /*margin-top: 5px;*/
 }
 
 #event-article-frame .event-article-item .img-frame{

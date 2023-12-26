@@ -44,7 +44,7 @@
         <h1>{{ item.name }}</h1>
         <h2>{{ positionMap[item.position] }}</h2>
       </div>
-      <a href="/counselor/0">
+      <a :href="/counselor/ + item.id">
         <div class="img-frame">
           <img :src="item.profile" @mouseenter="mouseEnterItem(index)" @mouseleave="mouseLeaveItem(index)"/>
         </div>

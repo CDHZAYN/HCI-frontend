@@ -136,6 +136,10 @@
       <h3>{{ bookInfo.bookType === 2 ? '活动时间' : '咨询时间' }}</h3>
       <p>{{ bookInfo.startTime }} ~ {{ bookInfo.endTime }}</p>
     </div>
+    <div class="price-item-frame" v-if="extraInfo.cancel">
+      <h3>取消原因</h3>
+      <p>{{extraInfo.cancel}}</p>
+    </div>
     <div class="price-item-frame" v-if="priceDiffFromBefore > 0">
       <h3>支付方式</h3>
       <el-select v-model="test">
@@ -500,9 +504,14 @@ export default {
       })
     },
     deleteBook() {
+
       if (this.isDeletingBook === false)
         this.isDeletingBook = true
       else {
+        if(!this.cancel){
+          ElMessage.error('您还未选择取消原因，请选择后确认。')
+          return
+        }
         ElMessageBox.confirm(
             '一旦操作无法撤销，您确认取消本次预约吗？',
             '',
