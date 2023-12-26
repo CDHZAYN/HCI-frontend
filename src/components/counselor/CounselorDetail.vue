@@ -1,5 +1,4 @@
 <template>
-  <p>{{detail}}</p>
   <div id="banner-frame">
     <div id="shadow">
       <img :src="detail.profile"/>

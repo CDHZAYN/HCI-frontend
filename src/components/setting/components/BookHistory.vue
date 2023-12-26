@@ -8,8 +8,9 @@
         <img :src="item.book.profile">
         <div class="info-item">
           <h1>{{ item.book.name }}</h1>
-          <h3 :class="{'is-pending': item.book.stateType === 0}">{{ item.book.location }} | {{item.book.diff}}
-            {{ item.book.startTime.substring(item.book.startTime.indexOf(' '), item.book.startTime.lastIndexOf(':')) }} ~
+          <h3 :class="{'is-pending': item.book.stateType === 0}">{{ item.book.location }} | {{ item.book.diff }}
+            {{ item.book.startTime.substring(item.book.startTime.indexOf(' '), item.book.startTime.lastIndexOf(':')) }}
+            ~
             {{ item.book.endTime.substring(item.book.endTime.indexOf(' '), item.book.endTime.lastIndexOf(':')) }}</h3>
         </div>
         <div class="price-frame">
@@ -17,7 +18,8 @@
         </div>
       </template>
       <BookHistoryItem :bookInfo="bookList[showingBookIndex].book" :extraInfo="bookList[showingBookIndex].userBook"
-          :fellowListOld="bookList[showingBookIndex].userFellow" :index="showingBookIndex" v-if="showingBookIndex >= 0"></BookHistoryItem>
+                       :fellowListOld="bookList[showingBookIndex].userFellow" :index="showingBookIndex"
+                       v-if="showingBookIndex >= 0"></BookHistoryItem>
     </el-collapse-item>
   </el-collapse>
   <div id="bottom-frame">
@@ -84,8 +86,8 @@ export default {
         diffStr = startTime.fromNow(true).replace(' ', '') + '后'
       return diffStr
     },
-    changeShowingBook(activeName){
-      if(isNaN(activeName)){
+    changeShowingBook(activeName) {
+      if (isNaN(activeName)) {
         this.showingBookIndex = -1
       }
       this.showingBookIndex = parseInt(activeName)
@@ -103,56 +105,58 @@ export default {
         type,
         date: this.dateToString(this.earliestDateTime)
       }).then((res) => {
-        let bookListTemp = res.msg.bookRecord
-        if (bookListTemp.length <= 10) {
-          this.hasGetAll = true
-          if(bookListTemp.length === 0)
-            return
-        }
-        bookListTemp.forEach(e => {
-          e.book.diff = this.getDiffFromNow(e.book.startTime)
-          e.book.totalPrice = e.book.price * e.userFellow.length
+            let bookListTemp = res.msg.bookRecord
+            if (bookListTemp.length <= 10) {
+              this.hasGetAll = true
+              if (bookListTemp.length === 0)
+                return
+            }
+            bookListTemp.forEach(e => {
+              e.book.diff = this.getDiffFromNow(e.book.startTime)
+              e.book.totalPrice = e.book.price * e.userFellow.length
 
 
-          if(e.book.isOnline === 1 || e.userBook.isOnline === 0){
-            e.book.location = '线上'
+              if (e.book.isOnline === 1 || e.userBook.isOnline === 0) {
+                e.book.location = '线上'
+              }
 
-          let name = e.book.name
-          if(name.indexOf('单人') !== -1)
-            e.book.bookType = 0
-          else if(name.indexOf('多人') !== -1)
-            e.book.bookType = 1
-          else
-            e.book.bookType = 2
 
-          const startTime = dayjs(e.book.startTime, "YYYY-MM-DD HH:mm:ss")
-          if(e.userBook.cancel) {
-            e.book.location = '已取消'
-            e.book.stateType = 1
-          } else if (dayjs().isAfter(startTime))
-            e.book.stateType = 2
-          else
-            e.book.stateType = 0
+              let name = e.book.name
+              if (name.indexOf('单人') !== -1)
+                e.book.bookType = 0
+              else if (name.indexOf('多人') !== -1)
+                e.book.bookType = 1
+              else
+                e.book.bookType = 2
+
+              const startTime = dayjs(e.book.startTime, "YYYY-MM-DD HH:mm:ss")
+              if (e.userBook.cancel) {
+                e.book.location = '已取消'
+                e.book.stateType = 1
+              } else if (dayjs().isAfter(startTime))
+                e.book.stateType = 2
+              else
+                e.book.stateType = 0
+            })
+            const startTime = bookListTemp[bookListTemp.length - 1].book.startTime
+            this.earliestDateTime = dayjs(startTime, "YYYY-MM-DD HH:mm:ss")
+            this.bookList.push(...bookListTemp)
           }
-        })
-        console.log(bookListTemp[bookListTemp.length - 1])
-        const startTime = bookListTemp[bookListTemp.length - 1].book.startTime
-        this.earliestDateTime = dayjs(startTime, "YYYY-MM-DD HH:mm:ss")
-        this.bookList.push(...bookListTemp)
-      })
+      )
     },
     filterChange(selectBlock) {
 
       this.conditionForm[selectBlock.type] = selectBlock
       this.fetchSearchWrapper(true)
-    },
-    fetchSearchWrapper(isToClear){
+    }
+    ,
+    fetchSearchWrapper(isToClear) {
       this.queueingId++
       const queueingIdFrozen = this.queueingId
 
       setTimeout(() => {
         if (this.queueingId === queueingIdFrozen) {
-          if(isToClear){
+          if (isToClear) {
             this.skip = 0
             this.hasGetAll = false
             this.bookList = []
@@ -163,16 +167,19 @@ export default {
           this.fetchSearch()
         }
       }, 1000)
-    },
+    }
+    ,
     searchFellowName(query) {
       this.candidateFellow = ['CDH', '大葛老师', '葛家辰', '大C老师'].filter((item) => {
         return item.includes(query)
       })
-    },
+    }
+    ,
     addFellow() {
       this.fellowList = this.fellowList.concat(this.fellowAdding)
       this.fellowAdding = []
-    },
+    }
+    ,
     selectFellow(index) {
       if (this.fellowDeleting.indexOf(index) !== -1) {
         this.fellowDeleting.splice(this.fellowDeleting.indexOf(index), 1)

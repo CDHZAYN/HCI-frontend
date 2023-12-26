@@ -359,7 +359,7 @@ export default {
       }).then(() => {
         this.$emit('nextTo', 3, {})
       }).catch((err) => {
-        ElMessage.error('预约失败：' + err.msg)
+        ElMessage.error('预约失败，请稍后再试。')
       })
 
     },
