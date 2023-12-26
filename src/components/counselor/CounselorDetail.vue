@@ -133,13 +133,17 @@ export default {
 
 .award-item-frame {
   width: 250px;
-  height: 100px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-size: contain;
   background-repeat: no-repeat;
 }
 
 #award-frame p {
   text-align: center;
+  transform: translateY(-5px);
 }
 
 #main-frame {

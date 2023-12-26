@@ -15,29 +15,32 @@
       </div>
       <div id="ver-division-line"></div>
       <div id="event-article-frame">
-        <div v-for="(item, index) in article" class="event-article-item"
+        <div v-for="(item, index) in eventArticleList" class="event-article-item"
              @mouseenter="isHoverEvent[index] = true" @mouseleave="isHoverEvent[index] = false">
           <a :href="'/article/'+item.id">
-            <img :src="getImg(item.pic)" :class="{'is-hover': isHoverEvent[index]}"/>
+            <div :class="{'img-frame':true, 'is-hover': isHoverEvent[index]}">
+              <img :src="item.pic" />
+            </div>
             <div class="event-article-item-text">
-              <p :class="{'book-event': item.type === '活动预约' && item.isAvailable}">{{ item.type }}&nbsp;</p>
+              <p :class="{'book-event': item.type === 1 && item.isAvailable === 0}">{{ type[item.type + 1] }}&nbsp;</p>
               <p> | {{ item.date }}</p>
               <h4>{{ item.title }}</h4>
               <h5>{{ item.subtitle }}</h5>
             </div>
           </a>
         </div>
-        <a href="/article">查看更多活动文章→</a>
       </div>
     </div>
     <div id="hr-division-line"/>
     <div id="poison-article-frame">
-      <div v-for="(item, index) in article" class="poison-article-item"
+      <div v-for="(item, index) in poisonArticleList" class="poison-article-item"
            @mouseenter="isHoverPoison[index] = true" @mouseleave="isHoverPoison[index] = false">
-        <a :href="'###'">
-          <img :src="getImg(item.pic)" :class="{'is-hover': isHoverPoison[index]}"/>
+        <a :href="'/article/'+item.id">
+          <div :class="{'img-frame':true, 'is-hover': isHoverPoison[index]}">
+            <img :src="item.pic" />
+          </div>
           <div class="poison-article-item-text">
-            <p>{{ item.type }}&nbsp;</p>
+            <p>咨询师专栏&nbsp;</p>
             <p> | {{ item.date }}</p>
             <h4>{{ item.title }}</h4>
             <h5>{{ item.subtitle }}</h5>
@@ -45,7 +48,7 @@
         </a>
       </div>
     </div>
-    <a href="/article">查看更多咨询师专栏→</a>
+    <a href="/article">查看更多文章→</a>
     <div style="height: 20px;"></div>
   </div>
 </template>
@@ -85,7 +88,11 @@ export default {
       isHoverEvent: [],
       isHoverPoison: [],
 
-      poisonList: []
+      type: ['全部类型', '咨询师专栏', '活动预约', '活动回顾'],
+
+      poisonList: [],
+      poisonArticleList: [],
+      eventArticleList: []
     }
   },
   methods: {
@@ -96,6 +103,10 @@ export default {
   mounted() {
     this.$request.get('/home/carousel').then(res => {
       this.poisonList = res.msg
+    })
+    this.$request.get('/home/article').then(res=>{
+      this.poisonArticleList = res.msg.slice(0, 4)
+      this.eventArticleList = res.msg.slice(4)
     })
   }
 }
@@ -158,6 +169,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
 }
 
 #event-article-frame .event-article-item, #event-article-frame .event-article-item a {
@@ -168,19 +180,26 @@ export default {
   /*height: 300px;*/
 }
 
-#event-article-frame .event-article-item img {
+#event-article-frame .event-article-item .img-frame{
   width: 220px;
+  height: 120px;
   border-radius: 10px;
-  object-fit: contain;
+  overflow: hidden;
   transition: box-shadow 0.2s linear;
 }
 
-#event-article-frame .event-article-item img.is-hover {
+#event-article-frame .event-article-item .img-frame.is-hover{
   box-shadow: 0 0 10px grey;
 }
 
+#event-article-frame .event-article-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 #event-article-frame .event-article-item .event-article-item-text {
-  width: calc(100% - 220px);
+  width: 300px;
   margin-left: 10px;
 }
 
@@ -239,7 +258,7 @@ export default {
 #poison-article-frame .poison-article-item {
   display: flex;
   flex-direction: column;
-  width: calc((100vw - 400px) / 4 - 40px);
+  width: 260px;
 }
 
 #poison-article-frame .poison-article-item a {
@@ -247,25 +266,34 @@ export default {
   text-decoration: none;
 }
 
-#poison-article-frame .poison-article-item img {
-  width: 250px;
+#poison-article-frame .poison-article-item .img-frame{
+  width: 260px;
+  height: 130px;
   border-radius: 10px;
   object-fit: contain;
+  overflow: hidden;
   transition: box-shadow 0.2s linear;
 }
 
-#poison-article-frame .poison-article-item img.is-hover {
+#poison-article-frame .poison-article-item .img-frame.is-hover{
   box-shadow: 0 0 10px grey;
 }
 
+#poison-article-frame .poison-article-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 #poison-article-frame .poison-article-item .poison-article-item-text {
+  width: 260px;
   margin-left: 10px;
 }
 
 #poison-article-frame .poison-article-item p {
   display: inline-block;
   font-size: 13px;
-  margin: 0;
+  margin: 10px 0 0 0;
 }
 
 #poison-article-frame .poison-article-item h4 {

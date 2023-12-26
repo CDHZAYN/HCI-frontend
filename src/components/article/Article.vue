@@ -19,7 +19,7 @@
             <img :src="item.pic" />
           </div>
           <div class="event-article-item-text">
-            <p :class="{'book-event': item.type === 1}">{{ type[item.type + 1] }}&nbsp;</p>
+            <p :class="{'book-event': item.type === 1 && item.isAvailable === 0}">{{ type[item.type + 1] }}&nbsp;</p>
             <p> | {{ item.date }}</p>
             <h4>{{ item.title }}</h4>
             <h5>{{ item.subtitle }}</h5>
@@ -146,15 +146,14 @@ export default {
 
 #event-article-frame .event-article-item{
   margin-top: 15px;
+  flex-grow:1;
+  width: calc((100vw - 400px) / 2 - 20px);
 }
 
-#event-article-frame .event-article-item, #event-article-frame .event-article-item a {
+#event-article-frame .event-article-item a {
   display: flex;
   color: black;
   text-decoration: none;
-  /*height: 300px;*/
-  width: calc((100vw - 400px) / 2 - 20px);
-  /*margin-top: 5px;*/
 }
 
 #event-article-frame .event-article-item .img-frame{
@@ -177,7 +176,7 @@ export default {
 }
 
 #event-article-frame .event-article-item .event-article-item-text {
-  width: calc(100% - 220px);
+  width: 300px;
   margin-left: 10px;
 }
 

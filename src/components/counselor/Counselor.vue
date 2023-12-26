@@ -307,7 +307,7 @@ export default {
 }
 
 #counselor-hover-field {
-  padding: 10px 15px 20px 15px;
+  padding: 10px 10px 20px 10px;
   /*height: 150px;*/
   overflow-y: hidden;
   text-align: left;

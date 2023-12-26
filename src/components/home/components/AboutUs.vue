@@ -32,27 +32,63 @@
       </div>
     </div>
   </div>
-  <div id="counselor-shadow-frame">
-    <div id="counselor-shadow">
-    </div>
-  </div>
-  <div id="counselor-frame">
-    <div v-for="(item, index) in counselorList"
-         :class="{'counselor-item': true, 'counselor-item-border-show': isShow[index]}"
-         :style="{'transform': `translate(-${(timeCnt) % (320 * counselorList.length / 2 - 50)}px, 5px)`}">
-      <div :class="{ 'item-hover-not-show': !isShow[index], 'counselor-item-title': true}">
-        <h1>{{ item.name }}</h1>
-        <h2>{{ positionMap[item.position] }}</h2>
+  <!--  <div id="counselor-shadow-frame">-->
+  <!--    <div id="counselor-shadow">-->
+  <!--    </div>-->
+  <!--  </div>-->
+  <!--  <div id="counselor-frame">-->
+  <!--    <div>-->
+  <!--      <div v-for="(item, index) in counselorList"-->
+  <!--           :class="{'counselor-item': true, 'counselor-item-border-show': isShow[index]}"-->
+  <!--           >-->
+  <!--        <div :class="{ 'item-hover-not-show': !isShow[index], 'counselor-item-title': true}">-->
+  <!--          <h1>{{ item.name }}</h1>-->
+  <!--          <h2>{{ positionMap[item.position] }}</h2>-->
+  <!--        </div>-->
+  <!--        <a :href="/counselor/ + item.id">-->
+  <!--          <div class="img-frame">-->
+  <!--            <img :src="item.profile" @mouseenter="mouseEnterItem(index)" @mouseleave="mouseLeaveItem(index)"/>-->
+  <!--          </div>-->
+  <!--        </a>-->
+  <!--        <div :class="{'item-hover-not-show': !isShow[index], 'counselor-item-field':true}">-->
+  <!--          <p v-for="fieldItem in item.fieldLabel">{{ fieldItem }}</p>-->
+  <!--        </div>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
+  <Transition appear>
+    <div class="counselor-hover" v-show="hoverDisplay" @mouseleave="mouseLeaveItem()"
+         :style="{'transform': `translate(${hoverX}px, ${hoverY - 100}px)`}" :key="showingCounselor.name">
+      <div id="counselor-hover-title">
+        <h1>{{ showingCounselor.name }}</h1>
+        <h2>{{ positionMap[showingCounselor.position] }}</h2>
       </div>
-      <a :href="/counselor/ + item.id">
-        <div class="img-frame">
-          <img :src="item.profile" @mouseenter="mouseEnterItem(index)" @mouseleave="mouseLeaveItem(index)"/>
+      <a :href="'/counselor/' + showingCounselor.id">
+        <div style="width: 300px; height: 300px;">
+          <img :src="showingCounselor.profile"/>
         </div>
       </a>
-      <div :class="{'item-hover-not-show': !isShow[index], 'counselor-item-field':true}">
-        <p v-for="fieldItem in item.fieldLabel">{{ fieldItem }}</p>
+      <div id="counselor-hover-field">
+        <p v-for="item in showingCounselor.fieldLabel">{{ item }}</p>
       </div>
     </div>
+  </Transition>
+  <div class="counselor-row-frame">
+    <div class="banner-frame">
+      <div class="shadow">
+      </div>
+    </div>
+    <Transition name="row" appear :duration="400">
+      <div class="counselor-entry-frame">
+        <div :style="{'transform': `translate(-${(timeCnt) % (320 * counselorList.length / 2 - 50)}px, 0)`}">
+          <div v-for="(item, index) in counselorList"
+               class="counselor-item" :ref="'counselor' + index">
+            <img :src="item.profile"
+                 @mouseenter="mouseEnterItem(index)"/>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 
 </template>
@@ -64,11 +100,17 @@ export default {
   name: "AboutUs",
   data() {
     return {
+
+      hoverX: 0,
+      hoverY: 0,
+      hoverDisplay: false,
+      showingCounselor: {},
+      timer: null,
+
       counselorList: [],
       positionMap: ['专业咨询师', '专家级咨询师', '资深级咨询师', '督导级咨询师'],
       isShow: [],
       timeCnt: 0,
-      timer: null
     }
   },
   methods: {
@@ -76,13 +118,30 @@ export default {
       return getAssetsFile(name)
     },
     mouseEnterItem(index) {
-      this.isShow[index] = true
+      this.isHover = true
       clearInterval(this.timer)
+      setTimeout(() => {
+        this.showingCounselor = this.counselorList[index]
+
+        console.log(index)
+
+        this.hoverX = this.$refs['counselor' + index][0].getBoundingClientRect().left
+        // 这里不必要减最左元素的边距，减了反而会出错（可能是因为flex内获取的left不准确）
+        this.hoverY = this.$refs['counselor' + index][0].getBoundingClientRect().top
+            - this.$refs['counselor' + 0][0].getBoundingClientRect().top + 60
+        this.hoverDisplay = true
+      }, 100)
+
     },
-    mouseLeaveItem(index) {
-      this.isShow[index] = false
+    mouseLeaveItem() {
       this.timer = setInterval(() => ++this.timeCnt, 50)
-    }
+      this.isHover = false
+      setTimeout(() => {
+        // console.log(this.isHover)
+        if (!this.isHover)
+          this.hoverDisplay = false
+      }, 10)
+    },
   },
   mounted() {
     this.timer = setInterval(() => ++this.timeCnt, 50)
@@ -90,7 +149,7 @@ export default {
     this.$request.post('/counselor/list', {
       position: 3,
       skip: 0,
-    }).then((res)=>{
+    }).then((res) => {
       this.counselorList.push(...res.msg, ...res.msg)
     })
   }
@@ -98,6 +157,29 @@ export default {
 </script>
 
 <style scoped>
+
+.v-enter-active {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.v-leave-active {
+  transition: opacity 0.1s ease-in-out;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
+.row-enter-active,
+.row-leave-active {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.row-enter-from,
+.row-leave-to {
+  opacity: 0;
+}
 
 #main-frame {
   padding: 0 200px;
@@ -139,96 +221,107 @@ export default {
   line-height: 20px;
 }
 
-#counselor-shadow-frame {
-  width: 100%;
-  height: 300px;
-  margin: 50px 0 100px 0;
-  transform: translateY(5px);
-  overflow: hidden;
-}
-
-#counselor-shadow {
-  height: 300px;
-  width: 106vw;
-  transform: translate(-3vw);
-  box-shadow: inset 0 0 10px grey;
-}
-
-#counselor-frame {
-  position: absolute;
-  z-index: 2;
-  transform: translateY(-500px);
-  display: flex;
-  width: 100%;
-  height: 600px;
-  overflow-x: hidden;
-  /*overflow-y: visible;*/
-  /*  100margin+100title+300img*/
-}
-
-.counselor-item {
+.counselor-hover {
   width: 300px;
-  height: 550px;
-  margin: 0 10px;
-  /*border-radius: 20px;*/
-  transform: translateY(5px);
-  transition: background-color 0.2s linear, box-shadow 0.2s linear;
-}
-
-.counselor-item-border-show {
+  /*height: 500px;*/
+  position: absolute;
+  z-index: 3;
   background-color: white;
   box-shadow: -2px 2px 3px var(--pink), 2px -2px 3px var(--blue);
-}
-
-.item-hover-not-show {
-  opacity: 0;
-}
-
-
-.counselor-item .counselor-item-title {
-  padding-top: 10px;
-  height: 100px;
-  box-sizing: border-box;
   text-align: center;
-  transition: opacity 0.2s linear;
+  /*transition: opacity 0.2s ease-in-out;*/
 }
 
-.counselor-item .counselor-item-title h1 {
-  margin: 10px 0 0 0;
-  font-size: 24px;
-}
-
-.counselor-item .counselor-item-title h2 {
-  margin: 5px 0 0 0;
-  font-size: 16px;
-  font-weight: normal;
-}
-
-.counselor-item .img-frame {
-  width: 300px;
-  height: 300px;
-}
-
-.counselor-item .img-frame img {
+.counselor-hover img {
   width: 300px;
   height: 300px;
   object-fit: cover;
 }
 
-.counselor-item .counselor-item-field {
-  padding: 0 10px;
-  height: 150px;
-  transition: opacity 0.2s linear;
-  overflow-y: hidden;
+
+#counselor-hover-title {
+  padding-top: 10px;
+  height: 100px;
+  box-sizing: border-box;
+  text-align: center;
 }
 
-.counselor-item .counselor-item-field p {
+#counselor-hover-title h1 {
+  margin: 10px 0 0 0;
+  font-size: 24px;
+}
+
+#counselor-hover-title h2 {
+  margin: 5px 0 0 0;
+  font-size: 16px;
+  font-weight: normal;
+}
+
+#counselor-hover-field {
+  padding: 10px 10px 20px 10px;
+  /*height: 150px;*/
+  overflow-y: hidden;
+  text-align: left;
+}
+
+#counselor-hover-field p {
   display: inline-block;
   padding: 5px 8px;
   margin: 5px;
   border: 1px solid lightslategrey;
   border-radius: 10px;
   font-size: 16px;
+}
+
+.counselor-row-frame {
+  padding: 60px 0;
+}
+
+.banner-frame {
+  width: 100%;
+  height: 300px;
+  /*margin: 20px 0 40px 0;*/
+  /*transform: translateY(5px);*/
+  overflow: hidden;
+}
+
+.shadow {
+  height: 300px;
+  width: 106vw;
+  transform: translate(-3vw);
+  box-shadow: inset 0 0 10px grey;
+}
+
+.counselor-entry-frame {
+  position: absolute;
+  z-index: 0;
+  /*  100margin+100title+300img*/
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  transform: translateY(-300px);
+}
+
+.counselor-entry-frame > div {
+  display: flex;
+  justify-content: center;
+}
+
+.counselor-item {
+  width: 300px;
+  height: 300px;
+  margin: 0 10px;
+  position: relative;
+  z-index: 2;
+  /*border-radius: 20px;*/
+  /*transform: translateY(5px);*/
+  transition: background-color 0.2s linear, box-shadow 0.2s linear;
+}
+
+.counselor-item img {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
 }
 
 </style>
