@@ -1,12 +1,14 @@
 <template>
   <div id="main-frame">
-    <div>
-      <div id="img-frame">
-        <img :src="getImg('鸡汤背景.png')">
-      </div>
-      <div id="text-frame">
-        <p v-for="item in text">{{ item }}</p>
-      </div>
+    <div id="poison-frame">
+      <el-carousel :interval="5000" arrow="never" :autoplay="true" height="100vh">
+        <el-carousel-item v-for="item in poisonList" :key="item.poison">
+          <img :src="item.pic" alt="鸡汤背景"/>
+          <div id="poison-text">
+            <p v-html="item.poison"></p>
+          </div>
+        </el-carousel-item>
+      </el-carousel>
     </div>
     <div id="register-frame">
       <a href="/home" id="title-frame">
@@ -53,7 +55,9 @@ export default {
   name: "Register",
   data() {
     return {
-      text: '生命的美，<br>不在它的绚烂，而在它的平和；<br>生命的动人，<br>不在它的激情，而在它的平静。'.split(/<br>/),
+
+      poisonList: [],
+
       registerForm: {
         username: '',
         password: '',
@@ -169,6 +173,11 @@ export default {
         return callback(new Error('验证码不匹配'))
       return callback()
     },
+  },
+  mounted() {
+    this.$request.get('/home/carousel').then(res => {
+      this.poisonList = res.msg
+    })
   }
 }
 </script>
@@ -183,27 +192,28 @@ export default {
   align-items: center;
 }
 
-#img-frame {
+#poison-frame {
   width: 60vw;
-  height: 100vh;
 }
 
-#img-frame img {
+#poison-frame :deep(img) {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-#text-frame {
+#poison-frame :deep(#poison-text) {
   position: absolute;
-  bottom: 30px;
-  padding-left: 30px;
+  bottom: 0;
+  left: 20px;
+  color: white;
+  text-align: left;
+  text-shadow: 0 0 5px grey;
 }
 
-#text-frame p {
-  font-size: 30px;
-  color: white;
-  line-height: 20px;
+#poison-frame :deep(#poison-text p) {
+  margin: 0 10px 20px 10px;
+  font-size: 50px;
 }
 
 #register-frame {

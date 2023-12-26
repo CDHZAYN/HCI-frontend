@@ -9,15 +9,17 @@
           </el-icon>
         </template>
       </el-input>
-      <BlockSelector :list="type" :type="'type'" :color="'blue'"></BlockSelector>
+      <BlockSelector :list="type" :type="'type'" :color="'blue'" @change-select="filterChange"></BlockSelector>
     </div>
     <div id="event-article-frame">
       <div v-for="(item, index) in articleList" class="event-article-item"
            @mouseenter="isHoverEvent[index] = true" @mouseleave="isHoverEvent[index] = false">
-        <a :href="'/article/0'">
-          <img :src="item.pic" :class="{'is-hover': isHoverEvent[index]}"/>
+        <a :href="'/article/' + item.id">
+          <div :class="{'img-frame':true, 'is-hover': isHoverEvent[index]}">
+            <img :src="item.pic" />
+          </div>
           <div class="event-article-item-text">
-            <p :class="{'book-event': item.type === 1}">{{ type[item.type] }}&nbsp;</p>
+            <p :class="{'book-event': item.type === 1}">{{ type[item.type + 1] }}&nbsp;</p>
             <p> | {{ item.date }}</p>
             <h4>{{ item.title }}</h4>
             <h5>{{ item.subtitle }}</h5>
@@ -74,18 +76,17 @@ export default {
       if (isToClear) {
         this.skip = 0
         this.hasGetAll = false
-        this.showingCounselor = {}
-        this.counselorList = []
+        this.articleList = []
       }
       this.fetchSearch()
     },
     fetchSearch() {
       let title = undefined
       if (this.conditionForm.searchTitle)
-        title = this.conditionForm.searchTitle
+        title = this.conditionForm.searchTitle.text
       let type = undefined
-      if (this.conditionForm.type)
-        type = this.conditionForm.type - 1
+      if (this.conditionForm.type && this.conditionForm.type.index)
+        type = this.conditionForm.type.index - 1
 
       this.$request.post('/article/list', {
         title,
@@ -97,7 +98,7 @@ export default {
         if (res.msg.length < 8) {
           this.hasGetAll = true
         }
-      }).finally(()=>{
+      }).finally(() => {
         this.isFetching = false
       })
     }
@@ -152,15 +153,23 @@ export default {
   margin-top: 5px;
 }
 
-#event-article-frame .event-article-item img {
+#event-article-frame .event-article-item .img-frame{
   width: 220px;
+  height: 120px;
   border-radius: 10px;
   object-fit: contain;
+  overflow: hidden;
   transition: box-shadow 0.2s linear;
 }
 
-#event-article-frame .event-article-item img.is-hover {
+#event-article-frame .event-article-item .img-frame.is-hover{
   box-shadow: 0 0 10px grey;
+}
+
+#event-article-frame .event-article-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 #event-article-frame .event-article-item .event-article-item-text {

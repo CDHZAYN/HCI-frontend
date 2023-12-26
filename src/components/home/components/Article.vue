@@ -3,20 +3,24 @@
     <div style="height: 5px;"></div>
     <div id="flex-frame">
       <div id="poison-frame">
-        <img :src="getImg('鸡汤背景.png')" alt="鸡汤背景"/>
-        <div id="poison-text">
-          <h6>泽恩寄语</h6>
-          <p>生命的美，不在它的绚烂，而在它的平和；生命的动人，不在它的激情，而在它的平静。</p>
-        </div>
+        <el-carousel :interval="5000" arrow="always" height="calc((100vw - 400px) / 2 - 30px)">
+          <el-carousel-item v-for="item in poisonList" :key="item.poison">
+            <img :src="item.pic" alt="鸡汤背景"/>
+            <div id="poison-text">
+              <h6>泽恩寄语</h6>
+              <p v-html="item.poison"></p>
+            </div>
+          </el-carousel-item>
+        </el-carousel>
       </div>
       <div id="ver-division-line"></div>
       <div id="event-article-frame">
         <div v-for="(item, index) in article" class="event-article-item"
              @mouseenter="isHoverEvent[index] = true" @mouseleave="isHoverEvent[index] = false">
-          <a :href="'###'">
+          <a :href="'/article/'+item.id">
             <img :src="getImg(item.pic)" :class="{'is-hover': isHoverEvent[index]}"/>
             <div class="event-article-item-text">
-              <p :class="{'book-event': item.type === '活动预约'}">{{ item.type }}&nbsp;</p>
+              <p :class="{'book-event': item.type === '活动预约' && item.isAvailable}">{{ item.type }}&nbsp;</p>
               <p> | {{ item.date }}</p>
               <h4>{{ item.title }}</h4>
               <h5>{{ item.subtitle }}</h5>
@@ -79,13 +83,20 @@ export default {
         date: '2023-11-13'
       }],
       isHoverEvent: [],
-      isHoverPoison: []
+      isHoverPoison: [],
+
+      poisonList: []
     }
   },
   methods: {
     getImg(name) {
       return getAssetsFile(name)
     }
+  },
+  mounted() {
+    this.$request.get('/home/carousel').then(res => {
+      this.poisonList = res.msg
+    })
   }
 }
 </script>
@@ -107,27 +118,30 @@ export default {
   position: relative;
 }
 
-#poison-frame #poison-text {
+#poison-frame :deep(#poison-text) {
   position: absolute;
   bottom: 0;
   left: 0;
+  text-align: center;
   color: white;
+  width: 100%;
+  text-shadow: 0 0 5px grey;
 }
 
-#poison-frame #poison-text h6 {
+#poison-frame :deep(#poison-text h6) {
   margin: 0 0 10px 0;
   font-size: 20px;
   text-align: center;
   font-weight: normal;
 }
 
-#poison-frame #poison-text p {
+#poison-frame :deep(#poison-text p) {
   margin: 0 10px 20px 10px;
-  font-size: 30px;
+  font-size: 40px;
   text-align: center;
 }
 
-#poison-frame img {
+#poison-frame :deep(img) {
   width: 100%;
   object-fit: cover;
 }
@@ -219,7 +233,7 @@ export default {
   /*width: calc((100vw - 400px) / 2 - 10px);*/
   margin-top: 10px;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
 }
 
 #poison-article-frame .poison-article-item {

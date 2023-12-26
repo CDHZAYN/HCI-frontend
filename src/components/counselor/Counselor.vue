@@ -33,7 +33,7 @@
         <h1>{{ showingCounselor.name }}</h1>
         <h2>{{ position[showingCounselor.position + 1] }}</h2>
       </div>
-      <a href="/counselor/0">
+      <a :href="'/counselor/' + showingCounselor.id">
         <div style="width: 300px; height: 300px;">
           <img :src="showingCounselor.profile"/>
         </div>

@@ -1,9 +1,9 @@
 <template>
   <div id="main-frame">
     <div style="height: 30px;"></div>
-    <h1>{{ brief.title }}</h1>
-    <h4>{{ brief.date }}</h4>
-    <p>这是正文。</p>
+    <h1>{{ article.title }}</h1>
+    <h4>{{ article.date }}</h4>
+    <div id="text-frame" v-html="article.text"></div>
     <div id="confirm-button-frame">
       <el-button @click="login()" id="button" type="primary">现在预约</el-button>
     </div>
@@ -15,16 +15,19 @@ export default {
   name: "ArticleDetail",
   data() {
     return {
-      brief: {
-
-        pic: '文章默认头图.png',
-        title: '《奇葩说》黄执中：我一辈子都讨厌小孩 | 那些被孤立过的人',
-        subtitle: '',
-        type: '活动预约',
-        date: '2023-11-13'
-
+      article: {
       }
     }
+  },
+  mounted() {
+
+    this.$request.get('/article/detail', {
+      params:{
+        articleId: this.$route.params.articleId,
+      }
+    }).then(res=>{
+      this.article = res.msg
+    })
   }
 }
 </script>
@@ -32,6 +35,15 @@ export default {
 <style scoped>
 #main-frame {
   padding: 0 200px 30px 200px;
+}
+
+#text-frame :deep(p:has(img)){
+  text-align: center;
+}
+
+#text-frame :deep(img){
+  max-width: 300px;
+  max-height: 300px;
 }
 
 #confirm-button-frame{
