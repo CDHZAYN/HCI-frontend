@@ -1,25 +1,26 @@
 <template>
   <div id="main-frame">
     <div id="search-frame">
-      <el-input v-model="searchTitle" placeholder="搜索文章标题" maxlength="10">
+      <el-input v-model="searchTitle" placeholder="搜索文章标题" maxlength="10"
+                @blur="filterChange({type: 'searchTitle'})">
         <template #prefix>
           <el-icon>
             <Search></Search>
           </el-icon>
         </template>
       </el-input>
-      <BlockSelector :list="type" :color="'blue'"></BlockSelector>
+      <BlockSelector :list="type" :type="'type'" :color="'blue'"></BlockSelector>
     </div>
     <div id="event-article-frame">
-      <div v-for="(item, index) in article" class="event-article-item"
+      <div v-for="(item, index) in articleList" class="event-article-item"
            @mouseenter="isHoverEvent[index] = true" @mouseleave="isHoverEvent[index] = false">
         <a :href="'/article/0'">
-          <img :src="getImg(item.pic)" :class="{'is-hover': isHoverEvent[index]}"/>
+          <img :src="item.pic" :class="{'is-hover': isHoverEvent[index]}"/>
           <div class="event-article-item-text">
-            <p :class="{'book-event': item.type === '活动预约'}">{{ item.type }}&nbsp;</p>
+            <p :class="{'book-event': item.type === 1}">{{ type[item.type] }}&nbsp;</p>
             <p> | {{ item.date }}</p>
             <h4>{{ item.title }}</h4>
-            <h5>{{item.subtitle}}</h5>
+            <h5>{{ item.subtitle }}</h5>
           </div>
         </a>
       </div>
@@ -45,50 +46,71 @@ export default {
   data() {
     return {
       searchTitle: '',
-      type: ['全部类型', '活动预约', '活动回顾', '咨询师专栏'],
-      article: [{
-        pic: '文章默认头图.png',
-        title: '“人生的意义到底是什么？”来自11位心理咨询师的回答',
-        subtitle: '最近一直在追《都挺好》，整部剧不同于以往的家庭伦理剧，它终于将那张遮盖在中国家庭表面的都挺好、和睦的「面子」撕开，让我们看到了它真实的、剑拔弩张的「里子」。',
-        type: '活动预约',
-        date: '2023-11-13'
-      }, {
-        pic: '文章默认头图.png',
-        title: '《奇葩说》黄执中：我一辈子都讨厌小孩 | 那些被孤立过的人',
-        subtitle: '最近一直在追《都挺好》，整部剧不同于以往的家庭伦理剧，它终于将那张遮盖在中国家庭表面的都挺好、和睦的「面子」撕开，让我们看到了它真实的、剑拔弩张的「里子」。',
-        type: '活动预约',
-        date: '2023-11-13'
-      }, {
-        pic: '文章默认头图.png',
-        title: '这样的爱令人窒息，却难以逃离',
-        subtitle: '最近一直在追《都挺好》，整部剧不同于以往的家庭伦理剧，它终于将那张遮盖在中国家庭表面的都挺好、和睦的「面子」撕开，让我们看到了它真实的、剑拔弩张的「里子」。',
-        type: '活动回顾',
-        date: '2023-11-13'
-      }, {
-        pic: '文章默认头图.png',
-        title: '焦虑的本质是什么？',
-        subtitle: '最近一直在追《都挺好》，整部剧不同于以往的家庭伦理剧，它终于将那张遮盖在中国家庭表面的都挺好、和睦的「面子」撕开，让我们看到了它真实的、剑拔弩张的「里子」。',
-        type: '活动回顾',
-        date: '2023-11-13'
-      }],
+      type: ['全部类型', '咨询师专栏', '活动预约', '活动回顾'],
+      articleList: [],
       isHoverEvent: [],
+
+      conditionForm: {},
+
+      isFetching: false,
+
+      skip: 0,
       hasGetAll: false
     }
   },
   methods: {
     getImg(name) {
       return getAssetsFile(name)
+    },
+    filterChange(selectBlock) {
+      this.conditionForm[selectBlock.type] = selectBlock
+      this.filterSearchWrapper(true)
+    },
+    filterSearchWrapper(isToClear) {
+      if (this.isFetching)
+        return
+      this.isFetching = true
+
+      if (isToClear) {
+        this.skip = 0
+        this.hasGetAll = false
+        this.showingCounselor = {}
+        this.counselorList = []
+      }
+      this.fetchSearch()
+    },
+    fetchSearch() {
+      let title = undefined
+      if (this.conditionForm.searchTitle)
+        title = this.conditionForm.searchTitle
+      let type = undefined
+      if (this.conditionForm.type)
+        type = this.conditionForm.type - 1
+
+      this.$request.post('/article/list', {
+        title,
+        type,
+        skip: this.skip
+      }).then((res) => {
+        this.skip++
+        this.articleList.push(...res.msg)
+        if (res.msg.length < 8) {
+          this.hasGetAll = true
+        }
+      }).finally(()=>{
+        this.isFetching = false
+      })
     }
   },
   mounted() {
     // 观察底部
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        // console.log('reached bottom')
+        this.filterSearchWrapper()
       } else {
         // console.log('left bottom')
       }
-    }, { threshold: .6 });
+    }, {threshold: .6});
     const bottomFrame = document.getElementById("bottom-frame")
     observer.observe(bottomFrame)
   }
@@ -112,6 +134,7 @@ export default {
   display: inline-block;
   margin-right: 30px;
 }
+
 #event-article-frame {
   margin-top: 20px;
   width: calc(100vw - 400px);
@@ -187,10 +210,10 @@ export default {
 #bottom-frame {
   text-align: center;
   font-size: 13px;
-  margin-top:30px;
+  margin-top: 30px;
 }
 
-#bottom-frame :deep(.el-loading-mask){
+#bottom-frame :deep(.el-loading-mask) {
   transform: scale(70%, 70%);
   z-index: 0;
 }

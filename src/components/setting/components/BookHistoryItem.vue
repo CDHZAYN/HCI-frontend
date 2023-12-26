@@ -515,14 +515,14 @@ export default {
           if(this.bookInfo.bookType === 2) {
             this.$request.post('/eventBook/cancel', {
               userId: this.extraInfo.userId,
-              bookId: this.extraInfo.eventId,
+              eventId: this.extraInfo.eventId,
               userEventId: this.extraInfo.id,
               cancel: this.cancel
             })
           } else{
             this.$request.post('/counselorBook/cancel', {
               userId: this.extraInfo.userId,
-              bookId: this.extraInfo.counselorBookId,
+              counselorBookId: this.extraInfo.counselorBookId,
               userCounselorId: this.extraInfo.id,
               cancel: this.cancel
             })

@@ -5,7 +5,7 @@
   <el-collapse accordion v-if="bookList.length" @change="changeShowingBook">
     <el-collapse-item v-for="(item, index) in bookList" :name="index">
       <template #title>
-        <img :src="getImg('counselor'+(index % 4 + 1)+'.png')">
+        <img :src="item.book.profile">
         <div class="info-item">
           <h1>{{ item.book.name }}</h1>
           <h3>{{ item.book.location }} | {{item.book.diff}}

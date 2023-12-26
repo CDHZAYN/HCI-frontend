@@ -15,7 +15,7 @@
       </Transition>
       <Transition mode="out-in" name="avatar">
         <div id="avatar-frame" :key="list[showingIndex].title">
-          <img id="avatar" :src="getImg(list[showingIndex].avatar)" alt="counselor"/>
+          <img id="avatar" :src="list[showingIndex].avatar" alt="counselor"/>
         </div>
       </Transition>
     </div>
@@ -34,15 +34,15 @@ export default {
         {
           title: '遇到悲伤，<br>可以信赖一个人，<br>信赖当下的环境。',
           subtitle: '泽恩资深咨询师 程冰',
-          avatar: 'counselor4.png'
+          avatar: 'https://box.nju.edu.cn/f/c4391809b7eb4b4fb99d/?dl=1'
         }, {
           title: '生命是<br>一个体验的过程，<br>你并不孤单。',
           subtitle: '泽恩资深咨询师 陈铿',
-          avatar: 'counselor1.png'
+          avatar: 'https://box.nju.edu.cn/f/8b3057a6415e43648baf/?dl=1'
         }, {
           title: '无论经历什么困难，<br>我会一直在这里<br>陪伴着你。',
           subtitle: '泽恩资深咨询师 李诗淼',
-          avatar: 'counselor3.png'
+          avatar: 'https://box.nju.edu.cn/f/e10716cb92514298bd7d/?dl=1'
         }
       ]
     }

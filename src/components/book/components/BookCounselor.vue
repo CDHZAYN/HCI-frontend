@@ -34,12 +34,12 @@
         </div>
       </template>
     </el-calendar>
-    <div id="book-list-frame" v-loading="isListLoading || !hasFirstFetch">
+    <div id="book-list-frame" v-loading="isFetching">
       <div v-for="(item, index) in bookList" v-if="bookList.length"
            class="book-item-frame"
            @click="bookItemSelecting = index">
         <div :class="{'selecting-background': true, 'book-item-selecting': index === bookItemSelecting}"></div>
-        <img :src="getImg('counselor1.png')">
+        <img :src="item.profile? item.profile : getImg('活动.png')">
         <div class="info-item">
           <h2>{{ item.name }}</h2>
           <h4>{{ item.location }} |
@@ -85,14 +85,13 @@ export default {
       sex: ['全部性别', '男咨询师', '女咨询师'],
       position: ['全部职位', '专业咨询师', '专家级咨询师', '资深级咨询师', '督导级咨询师'],
       dateInfo: {},
-      isListLoading: false,
-      hasFirstFetch: false,
       skip: 0,
 
       availableDateList: [],
 
+      isFetching: false,
+
       conditionForm: {},
-      queueingId: 0,
       counselorIdList: [],
       counselTypeMap: ['单人咨询', '多人咨询', undefined],
 
@@ -162,23 +161,19 @@ export default {
         skip: this.skip
       }
     },
-    fetchCounselorBookWrapper(isToClear){
-      this.queueingId++
-      const queueingIdFrozen = this.queueingId
+    fetchCounselorBookWrapper(isToClear) {
+      if (this.isFetching)
+        return
+      this.isFetching = true
 
-      setTimeout(() => {
-        if (this.queueingId === queueingIdFrozen) {
-          if(isToClear){
-            this.skip = 0
-            this.hasGetAll = false
-            this.counselorIdList = []
-          }
-          this.fetchCounselorBook()
-        }
-      }, 1000)
+      if (isToClear) {
+        this.skip = 0
+        this.hasGetAll = false
+        this.counselorIdList = []
+      }
+      this.fetchCounselorBook()
     },
     fetchCounselorBook() {
-      this.isListLoading = true
       if (!this.skip)
         this.counselorIdList = []
       this.$request.post('/counselor/list', {
@@ -201,7 +196,7 @@ export default {
           dateStrSplit[1] = Number.parseInt(dateStrSplit[1]) - 1
           dateStrSplit[2] = Number.parseInt(dateStrSplit[2])
           if (this.availableDateList.indexOf(dateStrSplit[2]) === -1) {
-            this.isListLoading = false
+            this.isFetching = false
             return
           }
           date = new Date(...dateStrSplit)
@@ -219,9 +214,8 @@ export default {
         }).then((res) => {
           this.bookList = res.msg
         }).finally(() => {
-          this.hasFirstFetch = true
           this.skip = 0
-          this.isListLoading = false
+          this.isFetching = false
         })
       })
     },
@@ -229,22 +223,18 @@ export default {
       this.conditionForm[selectBlock.type] = selectBlock
       this.fetchCounselorBookWrapper(true)
     },
-    fetchEventBookWrapper(isToClear){
-      this.queueingId++
-      const queueingIdFrozen = this.queueingId
+    fetchEventBookWrapper(isToClear) {
+      if (this.isFetching)
+        return
+      this.isFetching = true
 
-      setTimeout(() => {
-        if (this.queueingId === queueingIdFrozen) {
-          if(isToClear){
-            this.skip = 0
-            this.hasGetAll = false
-          }
-          this.fetchEventBook()
-        }
-      }, 1000)
+      if (isToClear) {
+        this.skip = 0
+        this.hasGetAll = false
+      }
+      this.fetchEventBook()
     },
     fetchEventBook() {
-      this.isListLoading = true
       let date = undefined
       if (this.dateInfo && this.dateInfo.day) {
         let dateStrSplit = this.dateInfo.day.split('-')
@@ -261,22 +251,23 @@ export default {
       date = this.dateToString(date)
       this.$request.get('/eventBook/list', {
         params: {
-          date
+          date,
+          userId: this.userId
         }
       }).then((res) => {
         this.bookList = res.msg
       }).finally(() => {
-        this.hasFirstFetch = true
-        this.isListLoading = false
+        this.isFetching = false
       })
-    }
+    },
   },
   mounted() {
     if (this.type === 2) {
       this.fetchEventBookWrapper()
       const userId = localStorage.getItem('userId')
+      this.userId = userId
       this.$request.get('/eventBook/date', {
-        params:{
+        params: {
           userId
         }
       }).then((res) => {
@@ -359,7 +350,7 @@ export default {
   justify-content: center;
 }
 
-#calendar-frame :deep(.is-selected){
+#calendar-frame :deep(.is-selected) {
   background-color: unset;
 }
 

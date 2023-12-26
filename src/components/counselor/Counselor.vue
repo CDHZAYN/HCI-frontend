@@ -35,7 +35,7 @@
       </div>
       <a href="/counselor/0">
         <div style="width: 300px; height: 300px;">
-          <img :src="getImg(showingCounselor.avatar)"/>
+          <img :src="showingCounselor.profile"/>
         </div>
       </a>
       <div id="counselor-hover-field">
@@ -52,7 +52,7 @@
       <div class="counselor-entry-frame">
         <div v-for="(item, index2) in counselorList.slice(index1 * 4, index1 * 4 + 4)"
              class="counselor-item" :ref="'counselor' + (index1 * 4 + index2)">
-          <img :src="getImg('counselor' + ((index1 * 4 + index2) % 4 + 1) + '.png')"
+          <img :src="item.profile"
                @mouseenter="mouseEnterItem(index1, index2)"/>
         </div>
       </div>
@@ -87,7 +87,8 @@ export default {
       position: ['全部职位', '专业咨询师', '专家级咨询师', '资深级咨询师', '督导级咨询师'],
       counselType: ['全部形式', '单人咨询', '多人咨询', '团体活动', '企业EAP'],
       conditionForm: {},
-      queueingId: 0,
+
+      isFetching: false,
 
       counselorList: [],
       isShow: [],
@@ -134,13 +135,14 @@ export default {
 
 
       let fieldLabel = undefined
-      if (this.conditionForm['field'] && this.conditionForm['field'].text.indexOf('全部') !== -1)
+      if (this.conditionForm['field'] && this.conditionForm['field'].text.indexOf('全部') === -1)
         fieldLabel = this.conditionForm['field'].text
       let location = undefined
-      if (this.conditionForm['location'] && this.conditionForm['location'].text.indexOf('全部') !== -1)
+      if (this.conditionForm['location'] && this.conditionForm['location'].text.indexOf('全部') === -1)
         location = this.conditionForm['location'].text
       let form = undefined
-      if (this.conditionForm['counselType'] && this.conditionForm['counselType'].text.indexOf('全部') !== -1)
+      console.log(this.conditionForm['counselType'])
+      if (this.conditionForm['counselType'] && this.conditionForm['counselType'].text.indexOf('全部') === -1)
         form = this.conditionForm['counselType'].text
 
       let sex = undefined
@@ -167,11 +169,9 @@ export default {
       this.filterSearchWrapper(true)
     },
     filterSearchWrapper(isToClear) {
-      this.queueingId++
-      const queueingIdFrozen = this.queueingId
-
-      setTimeout(() => {
-        if (this.queueingId === queueingIdFrozen) {
+      if(this.isFetching)
+        return
+      this.isFetching = true
           if(isToClear){
             this.skip = 0
             this.hasGetAll = false
@@ -180,8 +180,6 @@ export default {
             this.counselorList = []
           }
           this.fetchSearch()
-        }
-      }, 1000)
     },
     fetchSearch() {
       this.$request.post('/counselor/list', {
@@ -192,6 +190,8 @@ export default {
         if (res.msg.length < 8) {
           this.hasGetAll = true
         }
+      }).finally(()=>{
+        this.isFetching = false
       })
     }
   },

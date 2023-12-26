@@ -46,7 +46,7 @@
       </div>
       <a href="/counselor/0">
         <div class="img-frame">
-          <img :src="getImg('counselor' + (index % 4 + 1) + '.png')" @mouseenter="mouseEnterItem(index)" @mouseleave="mouseLeaveItem(index)"/>
+          <img :src="item.profile" @mouseenter="mouseEnterItem(index)" @mouseleave="mouseLeaveItem(index)"/>
         </div>
       </a>
       <div :class="{'item-hover-not-show': !isShow[index], 'counselor-item-field':true}">
