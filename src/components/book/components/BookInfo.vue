@@ -314,7 +314,10 @@ export default {
         return
       } else if (this.info.type !== 2 &&
           (this.inputList[1].input === null || (this.inputList[1].input1 === 0 && this.inputList[1].input2 === null))) {
-        ElMessage.error('您暂未填写咨询者相关的必填项，请补充后重试。')
+        ElMessage.error('您暂未填写您与咨询者关系相关的必填项，请补充后重试。')
+        return
+      } else if(this.info.type === 1 && this.inputList[2].input1 === null){
+        ElMessage.error('您暂未填写咨询者关系相关的必填项，请补充后重试。')
         return
       } else if (this.test === null) {
         ElMessage.error('您暂未选择支付方式，请补充后重试。')

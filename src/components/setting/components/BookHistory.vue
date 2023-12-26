@@ -208,6 +208,25 @@ export default {
 
 <style scoped>
 
+@keyframes scroll {
+  0% {
+    margin-left: 0;
+    transform: translateX(0);
+  }
+  10% {
+    margin-left: 0;
+    transform: translateX(0);
+  }
+  90% {
+    margin-left: 100%;
+    transform: translateX(-100%);
+  }
+  100% {
+    margin-left: 100%;
+    transform: translateX(-100%);
+  }
+}
+
 :deep(.el-collapse-item__header) {
   height: 100px;
   font-family: 'Montserrat', PingFang SC, Microsoft YaHei, Arial, sans-serif;
