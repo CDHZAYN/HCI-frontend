@@ -101,5 +101,6 @@ export default {
   #frame p{
     margin: 0;
     padding: 70px 20px;
+    color: black;
   }
 </style>

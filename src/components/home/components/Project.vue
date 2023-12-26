@@ -1,7 +1,7 @@
 <template>
   <div id="main-frame">
-    <div v-for="item in projectList" class="project-item">
-      <ProjectItem :title="item.title" :description="item.description" :img="item.img"></ProjectItem>
+    <div v-for="(item, index) in projectList" class="project-item" @click="jump(index)">
+        <ProjectItem :title="item.title" :description="item.description" :img="item.img"></ProjectItem>
     </div>
     <div style="height: 330px"></div>
     <div id="weixin">
@@ -50,8 +50,22 @@ export default {
     }
   },
   methods: {
-    getImg(name){
+    getImg(name) {
       return getAssetsFile(name)
+    },
+    jump(index){
+      if(index === 0){
+        localStorage.setItem('bookType', '0')
+        window.location.href="/book";
+      } else if(index === 1){
+        localStorage.setItem('bookType', '1')
+        window.location.href="/book";
+      } else if(index === 3){
+        localStorage.setItem('bookType', '2')
+        window.location.href="/book";
+      } else if(index === 4){
+        window.location.href="/article/22";
+      }
     }
   }
 }
@@ -69,6 +83,11 @@ export default {
 
 .project-item {
   display: inline-block;
+  cursor: pointer;
+}
+
+.project-item a{
+  text-decoration: none;
 }
 
 #weixin {
@@ -82,7 +101,7 @@ export default {
   align-items: center;
 }
 
-#weixin>img{
+#weixin > img {
   width: 160px;
   height: 160px;
 }

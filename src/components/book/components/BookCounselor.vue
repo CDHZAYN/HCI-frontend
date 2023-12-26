@@ -90,6 +90,7 @@ export default {
       availableDateList: [],
 
       isFetching: false,
+      hasGetFirstDate: false,
 
       conditionForm: {},
       counselorIdList: [],
@@ -297,6 +298,10 @@ export default {
           this.bookItemSelecting = -1
           this.bookList = []
           this.dateInfo = {}
+          if(!this.hasGetFirstDate){
+            this.hasGetFirstDate = true
+            this.fetchCounselorBookWrapper()
+          }
         })
       })
     }
@@ -316,8 +321,12 @@ export default {
         })
       })
     } else {
+      const counselorName = localStorage.getItem('counselorName')
+      if(counselorName){
+        localStorage.setItem('counselorName','')
+        this.searchName = counselorName
+      }
       this.fetchAvailableCounselorBookDateWrapper()
-      this.fetchCounselorBookWrapper()
     }
   }
 }

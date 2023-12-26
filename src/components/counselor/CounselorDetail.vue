@@ -1,4 +1,5 @@
 <template>
+  <p>{{detail}}</p>
   <div id="banner-frame">
     <div id="shadow">
       <img :src="detail.profile"/>
@@ -41,7 +42,8 @@
       <p v-html="detail.poison.replaceAll('\n', '<br/>')"></p>
     </div>
     <div id="confirm-button-frame">
-      <el-button @click="login()" id="button" type="primary">现在预约</el-button>
+      <el-button @click="toSingle" class="button" v-if="hasSingleBook">预约单人咨询</el-button>
+      <el-button @click="toMulti" class="button" v-if="hasMultiBook">预约多人咨询</el-button>
     </div>
   </div>
 </template>
@@ -55,12 +57,25 @@ export default {
     return {
       award: ['华东师大<br>应用心理硕士', '国家二级<br>心理咨询师', '上海市<br>心理学会会员', '加州健康研究院<br>认证正念师资'],
       positionMap: ['专业咨询师', '专家级咨询师', '资深级咨询师', '督导级咨询师'],
-      detail: {}
+      detail: {},
+
+      hasSingleBook: false,
+      hasMultiBook: false
     }
   },
   methods: {
     getImg(name) {
       return getAssetsFile(name)
+    },
+    toSingle(){
+      localStorage.setItem('bookType', '0')
+      localStorage.setItem('counselorName', this.detail.name)
+      window.location.href="/book";
+    },
+    toMulti(){
+      localStorage.setItem('bookType', '1')
+      localStorage.setItem('counselorName', this.detail.name)
+      window.location.href="/book";
     }
   },
   mounted() {
@@ -70,7 +85,25 @@ export default {
       }
     }).then(res => {
       this.detail = res.msg
+      this.$request.post('/counselorBook/date', {
+        counselorId: [this.detail.id],
+        type: '单人咨询'
+      }).then(res=>{
+        console.log(res)
+        if(res.msg){
+          this.hasSingleBook = true
+        }
+      })
+      this.$request.post('/counselorBook/date', {
+        counselorId: [this.detail.id],
+        type: '多人咨询'
+      }).then(res=>{
+        if(res.msg){
+          this.hasMultiBook = true
+        }
+      })
     })
+
   }
 }
 </script>
@@ -155,7 +188,7 @@ export default {
   text-align: center;
 }
 
-#button {
+#confirm-button-frame .button {
   margin-top: 10px;
   width: 200px;
   height: 50px;
@@ -163,14 +196,17 @@ export default {
   border-color: unset;
   background-image: -webkit-linear-gradient(bottom left, var(--pink) 30%, var(--blue) 70%);
   font-weight: bold;
+  color: white;
 }
 
-#confirm-button-frame #button:hover {
+#confirm-button-frame .button:hover {
   background-image: -webkit-linear-gradient(bottom left, var(--light-pink) 30%, var(--light-blue) 70%);
+  color: white;
 }
 
-#confirm-button-frame #button:active {
+#confirm-button-frame .button:active {
   background-image: -webkit-linear-gradient(bottom left, rgb(194, 80, 125) 30%, rgb(76, 135, 168) 70%);
+  color: white;
 }
 
 </style>

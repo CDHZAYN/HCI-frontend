@@ -86,10 +86,16 @@ export default {
   },
   mounted() {
     const userId = localStorage.getItem('userId')
-    console.log(userId)
     if (!userId || userId === 'undefined') {
       this.unLogin = true
       ElMessage.warning('请您登陆后再进行预约。')
+    }
+
+    const bookType = localStorage.getItem('bookType')
+    if(bookType === '0' || bookType === '1' || bookType === '2'){
+      localStorage.setItem('bookType', '')
+      this.bookType = parseInt(bookType)
+      this.active = 1
     }
   }
 }

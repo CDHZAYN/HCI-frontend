@@ -32,7 +32,7 @@
         <el-form-item prop="verifyCode">
           <el-input v-model="registerForm.verifyCode" placeholder="邮箱验证码"
                     style="width: 75%; margin-right: 5%"/>
-          <el-button @click="sendEmailVerifyCode()" type="primary" style="width: 20%">send</el-button>
+          <el-button @click="sendEmailVerifyCode()" type="primary" style="width: 20%">发送</el-button>
         </el-form-item>
       </el-form>
       <el-button @click="register()" id="button" type="primary">注&nbsp;&nbsp;册</el-button>
