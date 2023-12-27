@@ -1,5 +1,4 @@
 <template>
-  <p>{{bookInfo}}</p>
   <div style="height: 10px;"></div>
   <div id="hr-division-line"></div>
   <div class="detail-item-frame">
